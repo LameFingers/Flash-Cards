@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Flashcards</title>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            background-color: rgb(245, 185, 185);
+            overflow: hidden;
+        }
+        .centered-icon {
+            height: 100vh;           
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .icon-group {
+            text-align: center;
+        }
+
+        #starting-button {
+            background: none;
+            border: none;
+            padding: 0;
+            cursor: pointer;
+        }
+
+    </style>
+
+
+
+  </head>
+  <body>
+
+    <div class="centered-icon">
+        <div class="icon-group">
+            <h1>Flash Cards</h1>
+            <button id="starting-button">
+                <img src="images/Frame 1.svg" alt="Plus Icon" id = "starting_icon">
+            </button>
+        </div>
+    </div>
+    <!-- The alt just shows the text if the image doesn't load, the id is the association-->
+    <div id="card">  
+        <!-- Div contatiners are basically "containers that hosue chunks of code"--> 
+      <!-- This will show our question or answer -->
+    </div>
+
+    
+
+    <button id="next-btn">Next</button>
+  </body>
+</html>
