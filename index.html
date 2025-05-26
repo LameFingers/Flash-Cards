@@ -9,7 +9,9 @@
             margin: 0;
             padding: 0;
             background-color: rgb(245, 185, 185);
+            overflow: hidden;
         }
+        
         /* Centering the icon in the start menue */
         .centered-icon {
             height: 100vh;           
@@ -50,8 +52,15 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: 100vh;
+            height: 60vh;
             gap: 30px;
+        }
+
+        #navigation-cluster {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 500px;
 
         }
     </style>
@@ -59,8 +68,8 @@
   </head>
   <body>
 
+    <!-- Title Screen -->
     <div class="centered-icon" id="start-screen">
-        <!-- This is the starting screen -->
         <div class="icon-group">
             <h1>Flash Cards</h1>
             <button id="starting-button">
@@ -70,9 +79,20 @@
     </div>
 
 
-    <div id="main-menue" style="display: none;">      <!-- Where the screen changing is happening -->
+    <!-- Menue Screen -->
+    <div id="menue-screen" style="display: none;">      
         <div id="banner">
-            <h2>Welcome to your Flashcards</h2>
+            <h2>
+                Welcome to your Flashcards
+            </h2>
+            <div id="navigation-cluster">
+                <button id="go-back">
+                    <img src="images/Left-Arrow.svg" alt="Right-Arrow" id="Right-Arrow-Icon">
+                </button>
+                <button id="go-forward">
+                    <img src="images/Right-Arrow.svg" alt="Left-Arrow" id="Left-Arrow-Icon">
+                </button>
+            </div>
 
             <div id="button-cluster">
                 <button id="library">
@@ -85,25 +105,22 @@
             </div>
 
         </div>
-        <div id="card">This will show your questions and answers</div>
-        <button id="next-btn">Next</button>
-        <button id="previous-btn">Menue</button>
     </div>
 
     <script>
         const startBtn = document.getElementById("starting-button");
         const startScreen = document.getElementById("start-screen");
-        const flashcardScreen = document.getElementById('main-menue');
-        const backBtn = document.getElementById('previous-btn');
+        const menueScreen = document.getElementById("menue-screen");
+        const backBtn = document.getElementById("Right-Arrow-Icon");
 
         // Hide the flashcard screen initially
         startBtn.addEventListener('click', () => { 
             startScreen.style.display = 'none';
-            flashcardScreen.style.display = 'block';
+            menueScreen.style.display = 'block';
         });
 
         backBtn.addEventListener('click', () => {
-            flashcardScreen.style.display = 'none';
+            menueScreen.style.display = 'none';
             startScreen.style.display = 'flex';
         });
     </script>
