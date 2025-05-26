@@ -107,23 +107,6 @@
         </div>
     </div>
 
-    <script>
-        const startBtn = document.getElementById("starting-button");
-        const startScreen = document.getElementById("start-screen");
-        const menueScreen = document.getElementById("menue-screen");
-        const backBtn = document.getElementById("Right-Arrow-Icon");
-
-        // Hide the flashcard screen initially
-        startBtn.addEventListener('click', () => { 
-            startScreen.style.display = 'none';
-            menueScreen.style.display = 'block';
-        });
-
-        backBtn.addEventListener('click', () => {
-            menueScreen.style.display = 'none';
-            startScreen.style.display = 'flex';
-        });
-    </script>
-    
+    <script src="scripts/main.js"></script>
   </body>
 </html>
