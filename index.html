@@ -3,13 +3,14 @@
   <head>
     <title>Flashcards</title>
     <style>
+        /* Sets the background of the whole entire website */
         html, body {
             height: 100%;
             margin: 0;
             padding: 0;
             background-color: rgb(245, 185, 185);
-            overflow: hidden;
         }
+        /* Centering the icon in the start menue */
         .centered-icon {
             height: 100vh;           
             display: flex;
@@ -27,9 +28,16 @@
             padding: 0;
             cursor: pointer;
         }
+
+        #start-screen {
+            overflow: hidden;
+            height: 100vh;
+        }
+        
+        #banner {
+            text-align: center;
+        }
     </style>
-
-
 
   </head>
   <body>
@@ -46,10 +54,12 @@
 
 
     <div id="main-menue" style="display: none;">      <!-- Where the screen changing is happening -->
-        <h2>Welcome to your Flashcards</h2>
+        <div id="banner">
+            <h2>Welcome to your Flashcards</h2>
+        </div>
         <div id="card">This will show your questions and answers</div>
         <button id="next-btn">Next</button>
-        <button id="previous-btn">Previous</button>
+        <button id="previous-btn">Menue</button>
     </div>
 
     <script>
