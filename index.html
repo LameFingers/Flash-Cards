@@ -37,6 +37,23 @@
         #banner {
             text-align: center;
         }
+
+        #banner button {
+            background: none;
+            border: none;
+            padding: 0;
+            cursor: pointer;
+        }
+
+        #button-cluster {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            gap: 30px;
+
+        }
     </style>
 
   </head>
@@ -56,6 +73,17 @@
     <div id="main-menue" style="display: none;">      <!-- Where the screen changing is happening -->
         <div id="banner">
             <h2>Welcome to your Flashcards</h2>
+
+            <div id="button-cluster">
+                <button id="library">
+                    <img src="images/Library.svg" alt="library" id="library-icon">
+                </button>
+                <br> <!-- Adds a breaker between them-->
+                <button id="new-set">
+                    <img src="images/New-Set.svg" alt="new-set" id="new-set-icon">
+                </button>
+            </div>
+
         </div>
         <div id="card">This will show your questions and answers</div>
         <button id="next-btn">Next</button>
