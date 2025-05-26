@@ -27,7 +27,6 @@
             padding: 0;
             cursor: pointer;
         }
-
     </style>
 
 
@@ -35,7 +34,8 @@
   </head>
   <body>
 
-    <div class="centered-icon">
+    <div class="centered-icon" id="start-screen">
+        <!-- This is the starting screen -->
         <div class="icon-group">
             <h1>Flash Cards</h1>
             <button id="starting-button">
@@ -43,15 +43,32 @@
             </button>
         </div>
     </div>
-    <!-- The alt just shows the text if the image doesn't load, the id is the association-->
-    <!-- Testing-->
-    <div id="card">  
-        <!-- Div contatiners are basically "containers that hosue chunks of code"--> 
-      <!-- This will show our question or answer -->
+
+
+    <div id="main-menue" style="display: none;">      <!-- Where the screen changing is happening -->
+        <h2>Welcome to your Flashcards</h2>
+        <div id="card">This will show your questions and answers</div>
+        <button id="next-btn">Next</button>
+        <button id="previous-btn">Previous</button>
     </div>
 
-    
+    <script>
+        const startBtn = document.getElementById("starting-button");
+        const startScreen = document.getElementById("start-screen");
+        const flashcardScreen = document.getElementById('main-menue');
+        const backBtn = document.getElementById('previous-btn');
 
-    <button id="next-btn">Next</button>
+        // Hide the flashcard screen initially
+        startBtn.addEventListener('click', () => { 
+            startScreen.style.display = 'none';
+            flashcardScreen.style.display = 'block';
+        });
+
+        backBtn.addEventListener('click', () => {
+            flashcardScreen.style.display = 'none';
+            startScreen.style.display = 'flex';
+        });
+    </script>
+    
   </body>
 </html>
