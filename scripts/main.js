@@ -10,6 +10,7 @@ class FlashcardApp {
         this.addCardBtn = document.getElementById("add-card");
         this.trashBtn = document.getElementById("trash-button");
         this.flashcardContent = document.getElementById("flashcard-content");
+        this.falshcardDeleteButton = document.getElementById("flashcard-trash-button")
 
         this.flashcards = [];
 
@@ -30,6 +31,7 @@ class FlashcardApp {
         this.backBtnFlash.addEventListener('click', () => this.showMenu());
         this.addCardBtn.addEventListener('click', () => this.addFlashcard());
         this.trashBtn.addEventListener('click', () => this.deleteLastFlashcard());
+        this.falshcardDeleteButton.addEventListener("click", () => this.deleteFlashcard(newCard))
     }
 
     showStart() {
@@ -64,9 +66,12 @@ class FlashcardApp {
         newCard.setAttribute("data-index", cardIndex);
 
         newCard.innerHTML = `
+        
             <input type="text" class="term" placeholder="Term">
             <input type="text" class="definition" placeholder="Definition">
-            <button class="delete-card">Delete</button>
+            <button class="delete-card"> 
+                <img src="images/Trash.svg" alt="trash-icon" />
+            </button>
         `;
 
         newCard.querySelector(".delete-card").addEventListener("click", () => {
@@ -76,6 +81,8 @@ class FlashcardApp {
         const buttonContainer = document.querySelector(".button-container");
         this.flashcardContent.insertBefore(newCard, buttonContainer);
         this.updateCardIndices();
+
+        this.flashcardContent.scrollTop = this.flashcardContent.scrollHeight;
     }
 
     deleteFlashcard(cardElement) {

@@ -9,7 +9,7 @@
             margin: 0;
             padding: 0;
             background-color: rgb(245, 185, 185);
-            overflow: hidden;
+            overflow: auto;
         }
         
         /* Centering the icon in the start menue */
@@ -73,6 +73,9 @@
         }
 
         #flashcard-content {
+            flex: 1;
+            overflow-y: auto;
+            scroll-behavior: smooth;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -128,6 +131,19 @@
 
         #add-card:hover, #save-set:hover {
             background-color: #45a049; /* Darker green */
+        }
+
+        #flashcard-screen {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .delete-card {
+            background: none;
+            border: none;
+            padding: 0;
+            cursor: pointer;
         }
 
     </style>
@@ -192,8 +208,6 @@
                 <input type="text" class="definition" placeholder="Definition">
             </div>
 
-            <br> <!-- Adds a breaker between them-->
-            
             <div class = "button-container">
                 <button id="add-card">+ Add Card</button>
                 <button id="save-set">Save Set</button>
