@@ -72,6 +72,18 @@ class FlashcardApp {
         const buttonContainer = document.querySelector(".button-container");
         this.flashcardContent.insertBefore(newCard, buttonContainer);
     }
+
+
+
+
+
+
+
+
+
+
+
+    
 }
     
 document.addEventListener("DOMContentLoaded", () => {
