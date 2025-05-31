@@ -163,7 +163,7 @@ class FlashcardApp {
         }
 
         try {
-            await db.collection("flashcardSets").add({
+            await window.db.collection("flashcardSets").add({
                 title: setTitle,
                 cards: flashcards,
                 createdAt: new Date()
