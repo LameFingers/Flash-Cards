@@ -10,7 +10,6 @@ class FlashcardApp {
         this.addCardBtn = document.getElementById("add-card");
         this.trashBtn = document.getElementById("trash-button");
         this.flashcardContent = document.getElementById("flashcard-content");
-        this.falshcardDeleteButton = document.getElementById("flashcard-trash-button")
 
         this.flashcards = [];
 
@@ -22,6 +21,8 @@ class FlashcardApp {
         }
 
         this.setupEventListener();
+
+        this.autoExpandTextAreas();
     }
 
     setupEventListener() {
@@ -66,13 +67,14 @@ class FlashcardApp {
         newCard.setAttribute("data-index", cardIndex);
 
         newCard.innerHTML = `
-        
+
             <input type="text" class="term" placeholder="Term">
-            <input type="text" class="definition" placeholder="Definition">
+            <textarea class="definition" placeholder="Definition"></textarea>
             <button class="delete-card"> 
                 <img src="images/Trash.svg" alt="trash-icon" />
             </button>
         `;
+
 
         newCard.querySelector(".delete-card").addEventListener("click", () => {
             this.deleteFlashcard(newCard);
@@ -81,6 +83,7 @@ class FlashcardApp {
         const buttonContainer = document.querySelector(".button-container");
         this.flashcardContent.insertBefore(newCard, buttonContainer);
         this.updateCardIndices();
+        this.autoExpandTextAreas();
 
         this.flashcardContent.scrollTop = this.flashcardContent.scrollHeight;
     }
@@ -107,6 +110,20 @@ class FlashcardApp {
         const cardElements = document.querySelectorAll(".card-container");
         cardElements.forEach((card, i) => {
             card.setAttribute("data-index", i);
+        });
+    }
+
+    autoExpandTextAreas() {
+        const textareas = document.querySelectorAll(".definition");
+        
+        textareas.forEach(textarea => {
+            textarea.addEventListener("input", function () {
+                this.style.height = "auto";
+                this.style.height = this.scrollHeight + "px";
+            });
+
+            textarea.style.height = "auto";
+            textarea.style.height = textarea.scrollHeight + "px";
         });
     }
 }
