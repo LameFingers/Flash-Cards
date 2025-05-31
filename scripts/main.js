@@ -3,6 +3,7 @@ class FlashcardApp {
         this.startBtn = document.getElementById("starting-button");
         this.startScreen = document.getElementById("start-screen");
         this.flashcardScreen = document.getElementById("flashcard-screen");
+        this.libraryScreen = document.getElementById("library-screen");
         this.menueScreen = document.getElementById("menue-screen");
         this.backBtn = document.getElementById("Right-Arrow-Icon");
         this.newSet = document.getElementById("new-set-icon");
@@ -10,6 +11,9 @@ class FlashcardApp {
         this.addCardBtn = document.getElementById("add-card");
         this.trashBtn = document.getElementById("trash-button");
         this.flashcardContent = document.getElementById("flashcard-content");
+        this.libraryButton = document.getElementById("library-button");
+        this.backBtnLib = document.getElementById("go-back-library");
+        
 
         this.flashcards = [];
 
@@ -25,12 +29,14 @@ class FlashcardApp {
     }
 
     setupEventListener() {
-        this.startBtn.addEventListener('click', () => this.showMenu());
-        this.backBtn.addEventListener('click', () => this.showStart());
-        this.newSet.addEventListener('click', () => this.showFlashcardScreen());
-        this.backBtnFlash.addEventListener('click', () => this.showMenu());
-        this.addCardBtn.addEventListener('click', () => this.addFlashcard());
-        this.trashBtn.addEventListener('click', () => this.deleteLastFlashcard());
+        this.startBtn.addEventListener("click", () => this.showMenu());
+        this.backBtn.addEventListener("click", () => this.showStart());
+        this.newSet.addEventListener("click", () => this.showFlashcardScreen());
+        this.backBtnFlash.addEventListener("click", () => this.showMenu());
+        this.addCardBtn.addEventListener("click", () => this.addFlashcard());
+        this.trashBtn.addEventListener("click", () => this.deleteLastFlashcard());
+        this.libraryButton.addEventListener("click", () => this.showLibraryScreen());
+        this.backBtnLib.addEventListener("click", () => this.showMenu());
     }
 
     showStart() {
@@ -48,10 +54,16 @@ class FlashcardApp {
         this.flashcardScreen.style.display = "flex";
     }
 
+    showLibraryScreen() {
+        this.hideAllScreens();
+        this.libraryScreen.style.display = "flex";
+    }
+
     hideAllScreens() {
         this.startScreen.style.display = "none";
         this.menueScreen.style.display = "none";
         this.flashcardScreen.style.display = "none";
+        this.libraryScreen.style.display = "none";
     }
 
     addFlashcard() {
