@@ -264,9 +264,9 @@
             </h1>
         </div>
     </div>
-
     <script src="https://www.gstatic.com/firebasejs/10.3.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.3.0/firebase-firestore.js"></script>
+
     <script>
     const firebaseConfig = {
         apiKey: "AIzaSyBCBimbSxCV2hYG-zRnafnboZ4cLLUn0HM",
@@ -279,7 +279,9 @@
     };
 
         const app = firebase.initializeApp(firebaseConfig);
-        window.db = firebase.firestore();
+        const db = firebase.firestore();
+
+        window.db = db;
     </script>
     <script src="scripts/main.js"></script>
   </body>
