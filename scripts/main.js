@@ -14,14 +14,12 @@ class FlashcardApp {
         this.flashcards = [];
 
         // Register the initial card in HTML (if present)
+        this.autoExpandTextAreas();
         const initialCard = this.flashcardContent.querySelector(".card-container");
         if (initialCard) {
             this.flashcards.push({ term: "", definition: "" });
             initialCard.setAttribute("data-index", 0);
         }
-
-        this.setupEventListener();
-
         this.autoExpandTextAreas();
     }
 

@@ -156,6 +156,7 @@
             line-height: 1.4em;
             width: 100%;
             box-sizing: border-box;
+            transition: height 0.2s ease-in-out;
         }
 
     </style>
@@ -215,9 +216,12 @@
         <div id="flashcard-content">
             <input type="text" id="set-title" placeholder="Enter title for your flashcard set">
 
-            <div class="card-container">
+            <div class="card-container" data-index="0">
                 <input type="text" class="term" placeholder="Term">
                 <textarea class="definition" placeholder="Definition"></textarea>
+                <button class="delete-card">
+                    <img src="images/Trash.svg" alt="trash-icon"/>
+                </button>
             </div>
 
             <div class = "button-container">
