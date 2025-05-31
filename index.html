@@ -95,6 +95,7 @@
             display: flex;
             gap: 10px;
             width: 80%;
+            align-items: flex-start;
         }
 
         .button-container {
@@ -147,16 +148,25 @@
         }
 
         .definition {
+            flex: 1;
             resize: none;
-            overflow: hidden;
+            overflow-y: auto;
             min-height: 40px;
             font-size: 1.2em;
             padding: 10px;
             border-radius: 5px;
             line-height: 1.4em;
             width: 100%;
-            box-sizing: border-box;
             transition: height 0.2s ease-in-out;
+        }
+
+        .term {
+            height: 40px;
+            flex: 0 1 45%;
+            font-size: 1.2em;
+            padding: 10px;
+            border-radius: 5px;
+            box-sizing: border-box; 
         }
 
     </style>

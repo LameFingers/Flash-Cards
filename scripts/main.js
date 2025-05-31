@@ -20,7 +20,8 @@ class FlashcardApp {
             this.flashcards.push({ term: "", definition: "" });
             initialCard.setAttribute("data-index", 0);
         }
-        this.autoExpandTextAreas();
+        
+        this.setupEventListener();
     }
 
     setupEventListener() {
@@ -30,7 +31,6 @@ class FlashcardApp {
         this.backBtnFlash.addEventListener('click', () => this.showMenu());
         this.addCardBtn.addEventListener('click', () => this.addFlashcard());
         this.trashBtn.addEventListener('click', () => this.deleteLastFlashcard());
-        this.falshcardDeleteButton.addEventListener("click", () => this.deleteFlashcard(newCard))
     }
 
     showStart() {
