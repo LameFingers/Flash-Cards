@@ -180,6 +180,25 @@
     </style>
 
   </head>
+
+        <!-- Data -->
+    <script src="https://www.gstatic.com/firebasejs/10.3.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.3.0/firebase-firestore.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBCBimbSxCV2hYG-zRnafnboZ4cLLUn0HM",
+            authDomain: "flashcard-project-9a333.firebaseapp.com",
+            projectId: "flashcard-project-9a333",
+            storageBucket: "flashcard-project-9a333.appspot.com",
+            messagingSenderId: "257132736136",
+            appId: "1:257132736136:web:6e6af47a5058f3521cf93d",
+            measurementId: "G-01KYS5PVEE"
+            };
+
+        const app = firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+    </script>
+
   <body>
 
     <!-- Title Screen -->
