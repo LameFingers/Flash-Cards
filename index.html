@@ -275,6 +275,8 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 
+    <script src="scripts/main.js"></script>
+
     <!-- Firebase Initialization -->
     <script>
     window.addEventListener("load", () => {
@@ -303,14 +305,14 @@
     if (result.user) {
         console.log("Redirect login successful:", result.user);
         document.getElementById("login-form").style.display = "none";
-        document.getElementById("start-screen").style.display = "none"; // 👈 ADD THIS
+        document.getElementById("start-screen").style.display = "none";
         new FlashcardApp();
     } else {
         const user = window.auth.currentUser;
         if (user) {
         console.log("Already logged in:", user);
         document.getElementById("login-form").style.display = "none";
-        document.getElementById("start-screen").style.display = "none"; // 👈 ADD THIS
+        document.getElementById("start-screen").style.display = "none";
         new FlashcardApp();
         } else {
         console.log("No user logged in yet.");
@@ -320,6 +322,6 @@
     });
     </script>
 
-  <script src="scripts/main.js"></script>
+  
   </body>
 </html>
