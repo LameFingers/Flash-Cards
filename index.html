@@ -164,12 +164,6 @@
       box-sizing: border-box;
     }
 
-    #login-form {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
   </style>
 </head>
 <body>
@@ -181,6 +175,10 @@
       <button id="starting-button">
         <img src="images/Frame 1.svg" alt="Plus Icon" id="starting_icon">
       </button>
+
+      <div id="login-form">
+        <button id="google-login-btn">Sign in with Google</button>
+      </div>
     </div>
   </div>
 
@@ -249,10 +247,6 @@
     </div>
   </div>
 
-  <!-- Login Form -->
-  <div id="login-form">
-    <button id="google-login-btn">Sign in with Google</button>
-  </div>
 
   <!-- Firebase Scripts -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -308,8 +302,8 @@
             console.error("🔥 Error initializing FlashcardApp:", err);
           }
         } else {
-          document.getElementById("login-form").style.display = "flex";
-          document.getElementById("start-screen").style.display = "none";
+          document.getElementById("start-screen").style.display = "flex";
+          document.getElementById("login-form").style.display = "block";
         }
       });
     });
