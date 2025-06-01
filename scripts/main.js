@@ -181,9 +181,6 @@ class FlashcardApp {
     }
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-    new FlashcardApp();
-})
 
 
 
