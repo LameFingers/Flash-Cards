@@ -264,31 +264,32 @@
             </h1>
         </div>
     </div>
+<!-- ✅ Firebase SDKs (v8, must come first) -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+<!-- ✅ Firebase setup and app launch -->
 <script>
-  // Wait for both Firebase SDKs to fully load
   window.addEventListener("load", () => {
-    // Check if Firebase is ready
     if (!window.firebase || !firebase.firestore) {
       console.error("❌ Firebase SDKs not loaded correctly.");
       return;
     }
 
     const firebaseConfig = {
-      apiKey: "AIzaSyBCBimbSxCV2hYG-zRnafnboZ4cLLUn0HM",
-      authDomain: "flashcard-project-9a333.firebaseapp.com",
-      projectId: "flashcard-project-9a333",
-      storageBucket: "flashcard-project-9a333.appspot.com",
-      messagingSenderId: "257132736136",
-      appId: "1:257132736136:web:6e6af47a5058f3521cf93d",
-      measurementId: "G-01KYS5PVEE"
+      apiKey: "...",
+      authDomain: "...",
+      projectId: "...",
+      storageBucket: "...",
+      messagingSenderId: "...",
+      appId: "...",
+      measurementId: "..."
     };
 
-    // ✅ Safe to initialize
     firebase.initializeApp(firebaseConfig);
-    window.db = firebase.firestore();
+    window.db = firebase.firestore(); // ✅ Now this works
 
-    // ✅ Now start your app
-    new FlashcardApp();
+    new FlashcardApp(); // ✅ Your app starts here
   });
 </script>
 
