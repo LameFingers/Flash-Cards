@@ -278,11 +278,12 @@
         measurementId: "G-01KYS5PVEE"
     };
 
+    firebase.initializeApp(firebaseConfig);
+    window.db = db;
 
-        const app = firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-
-        window.db = db;
+    document.addEventListener("DOMContentLoaded", () => {
+        new FlashCardApp();
+    });
     </script>
     <script src="scripts/main.js"></script>
   </body>
