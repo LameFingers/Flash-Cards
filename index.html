@@ -265,9 +265,20 @@
         </div>
     </div>
 
+    <!-- Log in logic -->
+    <div id="login-form">
+        <input type="email" id="login-email" placeholder="Email">
+        <input type="password" id="login-password" placeholder="Password">
+        <button id="login-btn">
+            Log In
+        </button>
+
+    </div>
+
     <!-- Firebase SDKs (v8) -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 
     <!-- Firebase Initialization -->
     <script>
@@ -284,6 +295,23 @@
 
         firebase.initializeApp(firebaseConfig);
         window.db = firebase.firestore();
+
+        window.auth = firebase.auth();
+
+        document.getElementById("login-btn").addEventListener("click", () => {
+        const email = document.getElementById("login-email").value;
+        const password = document.getElementById("login-password").value;
+
+        window.auth.signInWithEmailAndPassword(email, password)
+            .then(userCredential => {
+            const user = userCredential.user;
+            alert(`Welcome ${user.email}`);
+            document.getElementById("login-form").style.display = "none";
+            })
+            .catch(error => {
+            alert("Login failed: " + error.message);
+            });
+        });
 
         new FlashcardApp();
     });

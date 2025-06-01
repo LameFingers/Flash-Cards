@@ -1,5 +1,6 @@
 
 
+
 class FlashcardApp {
     constructor () {
         this.startBtn = document.getElementById("starting-button");
@@ -29,6 +30,7 @@ class FlashcardApp {
         }
         
         this.setupEventListener();
+
     }
 
     setupEventListener() {
@@ -164,8 +166,14 @@ class FlashcardApp {
       return;
     }
 
+    const user = window.auth.currentUser;
+    if (!user) {
+        alert("Please login first");
+        return;
+    }
+
     try {
-      await window.db.collection("flashcardSets").add({
+      await window.db.collection("flashcardSets").doc(user.uid).collection("sets").add({
         title: setTitle,
         cards: flashcards,
         createdAt: new Date()
