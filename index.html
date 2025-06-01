@@ -306,7 +306,16 @@
     if (loginBtn) {
         loginBtn.addEventListener("click", () => {
         const provider = new firebase.auth.GoogleAuthProvider();
-        window.auth.signInWithRedirect(provider);
+        window.auth.signInWithPopup(provider)
+        .then(result => {
+            console.log("✅ Popup login successful:", result.user.email);
+            document.getElementById("login-form").style.display = "none";
+            document.getElementById("start-screen").style.display = "none";
+            new FlashcardApp();
+        })
+        .catch(error => {
+            console.error("❌ Login popup error:", error);
+        });
         });
     }
 
