@@ -30,6 +30,7 @@ class FlashcardApp {
         }
         
         this.setupEventListener();
+        this.showMenu();
 
     }
 

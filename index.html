@@ -300,24 +300,24 @@
 
     // Handle result from Google redirect
     window.auth.getRedirectResult().then(result => {
-        if (result.user) {
+    if (result.user) {
         console.log("Redirect login successful:", result.user);
         document.getElementById("login-form").style.display = "none";
-        new FlashcardApp();
-        } else {
-        // If no result, check if already logged in
+        new FlashcardApp(); // This launches your app
+    } else {
+        // No redirect result, check if user is already logged in
         const user = window.auth.currentUser;
         if (user) {
-            console.log("Already logged in:", user);
-            document.getElementById("login-form").style.display = "none";
-            new FlashcardApp();
+        console.log("Already logged in:", user);
+        document.getElementById("login-form").style.display = "none";
+        new FlashcardApp(); // This launches your app too
         } else {
-            console.log("No user logged in yet.");
+        console.log("No user logged in yet.");
         }
-        }
+    }
     }).catch(error => {
-        console.error("Redirect login error:", error);
-        alert("Google sign-in failed: " + error.message);
+    console.error("Redirect login error:", error);
+    alert("Google sign-in failed: " + error.message);
     });
     });
     </script>
