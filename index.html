@@ -293,21 +293,23 @@
 
         window.auth = firebase.auth();
 
-        document.getElementById("google-login-btn").addEventListener("click", () => {
+    document.getElementById("google-login-btn").addEventListener("click", () => {
         const provider = new firebase.auth.GoogleAuthProvider();
+        window.auth.signInWithRedirect(provider);
+    });
 
-        window.auth.signInWithPopup(provider)
-            .then(result => {
-            const user = result.user;
-            alert(`Welcome, ${user.displayName}`);
-            document.getElementById("login-form").style.display = "none";
-            new FlashcardApp();
-            })
-            .catch(error => {
-            alert("Google sign-in failed: " + error.message);
-            });
-        });
-        
+    // Handle result from redirect
+    window.auth.getRedirectResult().then(result => {
+        if (result.user) {
+        const user = result.user;
+        alert(`Welcome, ${user.displayName}`);
+        document.getElementById("login-form").style.display = "none";
+        new FlashcardApp();
+        }
+    }).catch(error => {
+        console.error("Redirect login error:", error);
+        alert("Google sign-in failed: " + error.message);
+    });
     });
     </script>
 
