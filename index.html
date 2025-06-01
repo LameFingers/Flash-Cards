@@ -303,21 +303,19 @@
     if (result.user) {
         console.log("Redirect login successful:", result.user);
         document.getElementById("login-form").style.display = "none";
-        new FlashcardApp(); // This launches your app
+        document.getElementById("start-screen").style.display = "none"; // 👈 ADD THIS
+        new FlashcardApp();
     } else {
-        // No redirect result, check if user is already logged in
         const user = window.auth.currentUser;
         if (user) {
         console.log("Already logged in:", user);
         document.getElementById("login-form").style.display = "none";
-        new FlashcardApp(); // This launches your app too
+        document.getElementById("start-screen").style.display = "none"; // 👈 ADD THIS
+        new FlashcardApp();
         } else {
         console.log("No user logged in yet.");
         }
     }
-    }).catch(error => {
-    console.error("Redirect login error:", error);
-    alert("Google sign-in failed: " + error.message);
     });
     });
     </script>
