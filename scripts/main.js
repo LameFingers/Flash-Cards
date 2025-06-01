@@ -1,3 +1,7 @@
+if (!window.db) {
+    console.error("FireBase not initalized");
+}
+
 class FlashcardApp {
     constructor () {
         this.startBtn = document.getElementById("starting-button");
