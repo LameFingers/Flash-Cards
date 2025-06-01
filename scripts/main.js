@@ -1,6 +1,3 @@
-
-
-
 class FlashcardApp {
     constructor () {
         this.startBtn = document.getElementById("starting-button");
@@ -17,21 +14,10 @@ class FlashcardApp {
         this.libraryButton = document.getElementById("library-button");
         this.backBtnLib = document.getElementById("go-back-library");
         this.saveBtn = document.getElementById("save-set");
-        
 
-        this.flashcards = [];
-
-        // Register the initial card in HTML (if present)
         this.autoExpandTextAreas();
-        const initialCard = this.flashcardContent.querySelector(".card-container");
-        if (initialCard) {
-            this.flashcards.push({ term: "", definition: "" });
-            initialCard.setAttribute("data-index", 0);
-        }
-        
         this.setupEventListener();
         this.showMenu();
-
     }
 
     setupEventListener() {
@@ -77,24 +63,19 @@ class FlashcardApp {
     }
 
     addFlashcard() {
-        const newCardData = { term: "", definition: "" };
-        this.flashcards.push(newCardData);
-
-        const cardIndex = this.flashcards.length - 1;
+        const cardIndex = document.querySelectorAll(".card-container").length;
 
         const newCard = document.createElement("div");
         newCard.classList.add("card-container");
         newCard.setAttribute("data-index", cardIndex);
 
         newCard.innerHTML = `
-
             <input type="text" class="term" placeholder="Term">
             <textarea class="definition" placeholder="Definition"></textarea>
             <button class="delete-card"> 
                 <img src="images/Trash.svg" alt="trash-icon" />
             </button>
         `;
-
 
         newCard.querySelector(".delete-card").addEventListener("click", () => {
             this.deleteFlashcard(newCard);
@@ -104,146 +85,145 @@ class FlashcardApp {
         this.flashcardContent.insertBefore(newCard, buttonContainer);
         this.updateCardIndices();
         this.autoExpandTextAreas();
-
         this.flashcardContent.scrollTop = this.flashcardContent.scrollHeight;
     }
 
     deleteFlashcard(cardElement) {
-        const index = parseInt(cardElement.getAttribute("data-index"), 10);
-        this.flashcards.splice(index, 1);
         cardElement.remove();
         this.updateCardIndices();
     }
 
     deleteLastFlashcard() {
         const cardElements = this.flashcardContent.querySelectorAll(".card-container");
-        if (cardElements.length === 0) return;
-
-        const lastCard = cardElements[cardElements.length - 1];
-        const index = parseInt(lastCard.getAttribute("data-index"), 10);
-        this.flashcards.splice(index, 1);
-        lastCard.remove();
-        this.updateCardIndices();
+        if (cardElements.length > 0) {
+            cardElements[cardElements.length - 1].remove();
+            this.updateCardIndices();
+        }
     }
 
     updateCardIndices() {
-        const cardElements = document.querySelectorAll(".card-container");
-        cardElements.forEach((card, i) => {
+        document.querySelectorAll(".card-container").forEach((card, i) => {
             card.setAttribute("data-index", i);
         });
     }
 
     autoExpandTextAreas() {
         const textareas = document.querySelectorAll(".definition");
-        
         textareas.forEach(textarea => {
             textarea.addEventListener("input", function () {
                 this.style.height = "auto";
                 this.style.height = this.scrollHeight + "px";
             });
-
             textarea.style.height = "auto";
             textarea.style.height = textarea.scrollHeight + "px";
         });
     }
 
-  async saveSet() {
-    const setTitle = document.getElementById("set-title").value.trim();
-    if (!setTitle) {
-      alert("Please enter a title for your flashcard set.");
-      return;
-    }
+    async saveSet() {
+        const setTitle = document.getElementById("set-title").value.trim();
+        if (!setTitle) {
+            alert("Please enter a title for your flashcard set.");
+            return;
+        }
 
-    const cardElements = document.querySelectorAll(".card-container");
-    const flashcards = [];
+        const cardElements = document.querySelectorAll(".card-container");
+        const flashcards = [];
 
-    cardElements.forEach(card => {
-      const term = card.querySelector(".term").value.trim();
-      const definition = card.querySelector(".definition").value.trim();
-      if (term && definition) {
-        flashcards.push({ term, definition });
-      }
-    });
-
-    if (flashcards.length === 0) {
-      alert("Please add at least one flashcard with both a term and a definition.");
-      return;
-    }
-
-    const user = window.auth.currentUser;
-    if (!user) {
-        alert("Please login first");
-        return;
-    }
-
-    try {
-      await window.db.collection("flashcardSets").doc(user.uid).collection("sets").add({
-        title: setTitle,
-        cards: flashcards,
-        createdAt: new Date()
-      });
-
-      alert(`Flashcard set "${setTitle}" saved online! ✅`);
-    } catch (error) {
-      console.error("Error saving to Firestore:", error.message, error);
-      alert("Something went wrong while saving.");
-    }
-  }
-
-    async loadLibrary() {
-    const user = window.auth.currentUser;
-    if (!user) {
-        alert("You must be logged in to view your flashcards.");
-        return;
-    }
-
-    try {
-        const snapshot = await window.db
-        .collection("flashcardSets")
-        .doc(user.uid)
-        .collection("sets")
-        .orderBy("createdAt", "desc")
-        .get();
-
-        const libraryScreen = document.getElementById("library-screen");
-        libraryScreen.innerHTML = `
-        <div id="library-banner">
-            <h1>
-            <button id="go-back-library">
-                <img src="images/Left-Arrow.svg" alt="library-back" id="library-left-icon">
-            </button>
-            Your Flashcard Sets
-            </h1>
-        </div>
-        <div id="library-content" style="padding: 20px;"></div>
-        `;
-
-        const contentDiv = document.getElementById("library-content");
-
-        snapshot.forEach(doc => {
-        const data = doc.data();
-        const cardDiv = document.createElement("div");
-        cardDiv.style.border = "1px solid #000";
-        cardDiv.style.padding = "10px";
-        cardDiv.style.marginBottom = "15px";
-        cardDiv.innerHTML = `
-            <strong>${data.title}</strong>
-            <p>${data.cards.length} card(s)</p>
-        `;
-        contentDiv.appendChild(cardDiv);
+        cardElements.forEach(card => {
+            const term = card.querySelector(".term").value.trim();
+            const definition = card.querySelector(".definition").value.trim();
+            if (term && definition) {
+                flashcards.push({ term, definition });
+            }
         });
 
-        // Re-attach event listener for the go-back button
-        const backBtn = document.getElementById("go-back-library");
-        backBtn.addEventListener("click", () => this.showMenu());
+        if (flashcards.length === 0) {
+            alert("Please add at least one flashcard with both a term and a definition.");
+            return;
+        }
 
-    } catch (err) {
-        console.error("Error loading flashcard sets:", err);
-        alert("Failed to load your flashcard sets.");
+        const user = window.auth.currentUser;
+        if (!user) {
+            alert("Please login first");
+            return;
+        }
+
+        try {
+            await window.db.collection("flashcardSets").doc(user.uid).collection("sets").add({
+                title: setTitle,
+                cards: flashcards,
+                createdAt: new Date()
+            });
+
+            alert(`Flashcard set "${setTitle}" saved online.`);
+
+            // Reset form
+            document.getElementById("set-title").value = "";
+            document.querySelectorAll(".card-container").forEach(card => card.remove());
+            this.addFlashcard();
+
+        } catch (error) {
+            console.error("Error saving to Firestore:", error.message, error);
+            alert("Something went wrong while saving.");
+        }
     }
+
+    async loadLibrary() {
+        const user = window.auth.currentUser;
+        if (!user) {
+            alert("You must be logged in to view your flashcards.");
+            return;
+        }
+
+        try {
+            const snapshot = await window.db
+                .collection("flashcardSets")
+                .doc(user.uid)
+                .collection("sets")
+                .orderBy("createdAt", "desc")
+                .get();
+
+            const libraryScreen = document.getElementById("library-screen");
+            libraryScreen.innerHTML = `
+                <div id="library-banner">
+                    <h1>
+                        <button id="go-back-library">
+                            <img src="images/Left-Arrow.svg" alt="library-back" id="library-left-icon">
+                        </button>
+                        Your Flashcard Sets
+                    </h1>
+                </div>
+                <div id="library-content" style="padding: 20px;"></div>
+            `;
+
+            const contentDiv = document.getElementById("library-content");
+
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                const cardDiv = document.createElement("div");
+                cardDiv.style.border = "1px solid #000";
+                cardDiv.style.padding = "10px";
+                cardDiv.style.marginBottom = "15px";
+                cardDiv.innerHTML = `
+                    <strong>${data.title}</strong>
+                    <p>${data.cards ? data.cards.length : 0} card(s)</p>
+                `;
+
+                // Optional: click to view/edit later
+                cardDiv.addEventListener("click", () => {
+                    alert(`Clicked set: ${data.title}`);
+                    // TODO: load cards into flashcard screen
+                });
+
+                contentDiv.appendChild(cardDiv);
+            });
+
+            document.getElementById("go-back-library")
+                .addEventListener("click", () => this.showMenu());
+
+        } catch (err) {
+            console.error("Error loading flashcard sets:", err);
+            alert("Failed to load your flashcard sets.");
+        }
     }
-
-
-
 }
-
