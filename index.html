@@ -269,25 +269,24 @@
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
-<!-- App logic (must come AFTER Firebase is initialized) -->
-<script src="scripts/main.js"></script>
-
+<!-- Firebase Initialization -->
 <script>
   window.addEventListener("load", () => {
     const firebaseConfig = {
-      apiKey: "AIzaSyBCBimbSxCV2hYG-zRnafnboZ4cLLUn0HM",
-      authDomain: "flashcard-project-9a333.firebaseapp.com",
-      projectId: "flashcard-project-9a333",
-      storageBucket: "flashcard-project-9a333.appspot.com",
-      messagingSenderId: "257132736136",
-      appId: "1:257132736136:web:6e6af47a5058f3521cf93d",
-      measurementId: "G-01KYS5PVEE"
+      apiKey: "AIzaSyAt2fHXrVVhZ8GdgdoqZFDjqad9jJ_SBQs",
+      authDomain: "flashcards-36766.firebaseapp.com",
+      projectId: "flashcards-36766",
+      storageBucket: "flashcards-36766.appspot.com", // ✅ FIXED THIS LINE
+      messagingSenderId: "607159019192",
+      appId: "1:607159019192:web:cea4ed5060caca3735364d",
+      measurementId: "G-YWHR8SXQX5"
     };
 
+    // ✅ v8-style init
     firebase.initializeApp(firebaseConfig);
     window.db = firebase.firestore();
 
-    // ✅ Now that db is defined, we can safely start the app
+    // ✅ Start your app after Firebase is ready
     new FlashcardApp();
   });
 </script>
