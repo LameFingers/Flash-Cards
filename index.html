@@ -294,30 +294,23 @@
     window.db = firebase.firestore();
     window.auth = firebase.auth();
 
-    // Google Sign-In trigger
+    // Trigger sign in
     document.getElementById("google-login-btn").addEventListener("click", () => {
         const provider = new firebase.auth.GoogleAuthProvider();
         window.auth.signInWithRedirect(provider);
     });
 
-    // Handle result from Google redirect
-    window.auth.getRedirectResult().then(result => {
-    if (result.user) {
-        console.log("Redirect login successful:", result.user);
-        document.getElementById("login-form").style.display = "none";
-        document.getElementById("start-screen").style.display = "none";
-        new FlashcardApp();
-    } else {
-        const user = window.auth.currentUser;
+    // Reliable login check
+    window.auth.onAuthStateChanged((user) => {
         if (user) {
-        console.log("Already logged in:", user);
+        console.log("User is signed in:", user);
         document.getElementById("login-form").style.display = "none";
         document.getElementById("start-screen").style.display = "none";
         new FlashcardApp();
         } else {
-        console.log("No user logged in yet.");
+        console.log("User is not signed in.");
+        document.getElementById("login-form").style.display = "block";
         }
-    }
     });
     });
     </script>
