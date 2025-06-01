@@ -205,10 +205,16 @@ class FlashcardApp {
                 cardDiv.style.padding = "10px";
                 cardDiv.style.marginBottom = "15px";
                 cardDiv.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
                     <strong>${data.title}</strong>
                     <p>${data.cards ? data.cards.length : 0} card(s)</p>
+                    </div>
+                    <button class="delete-set-btn" style="background: none; border: none; cursor: pointer; color: red;" title="Delete set">
+                        <img src="images/Trash.svg"/>
+                    </button>
+                </div>
                 `;
-
                 // Optional: click to view/edit later
                 cardDiv.addEventListener("click", () => {
                     alert(`Clicked set: ${data.title}`);
@@ -216,6 +222,29 @@ class FlashcardApp {
                 });
 
                 contentDiv.appendChild(cardDiv);
+            });
+
+            const deleteBtn = cardDiv.querySelector(".delete-set-btn");
+            
+            deleteBtn.addEventListener("click", async (e) => {
+            e.stopPropagation(); // Prevent triggering the card's click event
+            const confirmed = confirm(`Are you sure you want to delete "${data.title}"?`);
+            if (!confirmed) return;
+
+            try {
+                await window.db
+                .collection("flashcardSets")
+                .doc(user.uid)
+                .collection("sets")
+                .doc(doc.id)
+                .delete();
+
+                cardDiv.remove(); // Remove from UI
+                alert(`"${data.title}" has been deleted.`);
+            } catch (error) {
+                console.error("Failed to delete set:", error);
+                alert("Failed to delete the set.");
+            }
             });
 
             document.getElementById("go-back-library")
