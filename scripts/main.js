@@ -220,28 +220,6 @@ class FlashcardApp {
                     alert(`Clicked set: ${data.title}`);
                 });
 
-                const deleteBtn = cardDiv.querySelector(".delete-set-btn");
-                deleteBtn.addEventListener("click", async (e) => {
-                    e.stopPropagation(); // So clicking trash doesn't trigger the card click
-                    const confirmed = confirm(`Are you sure you want to delete "${data.title}"?`);
-                    if (!confirmed) return;
-
-                    try {
-                    await window.db
-                        .collection("flashcardSets")
-                        .doc(user.uid)
-                        .collection("sets")
-                        .doc(doc.id) // unique ID per card
-                        .delete();
-
-                    cardDiv.remove(); // Remove from screen
-                    alert(`"${data.title}" has been deleted.`);
-                    } catch (error) {
-                    console.error("Failed to delete set:", error);
-                    alert("Failed to delete the set.");
-                    }
-                });
-
                 contentDiv.appendChild(cardDiv);
             });
 
