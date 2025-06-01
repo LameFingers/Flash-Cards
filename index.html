@@ -288,7 +288,7 @@
               document.getElementById("login-form").style.display = "none";
               document.getElementById("start-screen").style.display = "none";
               new FlashcardApp();
-              document.getElementById("menue-screen").style.display = "block"; // ✅ Show menu
+              document.getElementById("menue-screen").style.display = "block";
             })
             .catch(error => {
               console.error("❌ Login popup error:", error);
@@ -303,7 +303,7 @@
           document.getElementById("start-screen").style.display = "none";
           try {
             new FlashcardApp();
-            document.getElementById("menue-screen").style.display = "block"; // ✅ Show menu
+            document.getElementById("menue-screen").style.display = "block";
           } catch (err) {
             console.error("🔥 Error initializing FlashcardApp:", err);
           }

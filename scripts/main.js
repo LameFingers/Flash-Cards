@@ -41,7 +41,10 @@ class FlashcardApp {
         this.backBtnFlash.addEventListener("click", () => this.showMenu());
         this.addCardBtn.addEventListener("click", () => this.addFlashcard());
         this.trashBtn.addEventListener("click", () => this.deleteLastFlashcard());
-        this.libraryButton.addEventListener("click", () => this.showLibraryScreen());
+        this.libraryButton.addEventListener("click", () => {
+            this.showLibraryScreen();
+            this.loadLibrary();
+        });
         this.backBtnLib.addEventListener("click", () => this.showMenu());
         this.saveBtn.addEventListener("click", () => this.saveSet());
     }
@@ -186,5 +189,61 @@ class FlashcardApp {
       alert("Something went wrong while saving.");
     }
   }
+
+    async loadLibrary() {
+    const user = window.auth.currentUser;
+    if (!user) {
+        alert("You must be logged in to view your flashcards.");
+        return;
+    }
+
+    try {
+        const snapshot = await window.db
+        .collection("flashcardSets")
+        .doc(user.uid)
+        .collection("sets")
+        .orderBy("createdAt", "desc")
+        .get();
+
+        const libraryScreen = document.getElementById("library-screen");
+        libraryScreen.innerHTML = `
+        <div id="library-banner">
+            <h1>
+            <button id="go-back-library">
+                <img src="images/Left-Arrow.svg" alt="library-back" id="library-left-icon">
+            </button>
+            Your Flashcard Sets
+            </h1>
+        </div>
+        <div id="library-content" style="padding: 20px;"></div>
+        `;
+
+        const contentDiv = document.getElementById("library-content");
+
+        snapshot.forEach(doc => {
+        const data = doc.data();
+        const cardDiv = document.createElement("div");
+        cardDiv.style.border = "1px solid #000";
+        cardDiv.style.padding = "10px";
+        cardDiv.style.marginBottom = "15px";
+        cardDiv.innerHTML = `
+            <strong>${data.title}</strong>
+            <p>${data.cards.length} card(s)</p>
+        `;
+        contentDiv.appendChild(cardDiv);
+        });
+
+        // Re-attach event listener for the go-back button
+        const backBtn = document.getElementById("go-back-library");
+        backBtn.addEventListener("click", () => this.showMenu());
+
+    } catch (err) {
+        console.error("Error loading flashcard sets:", err);
+        alert("Failed to load your flashcard sets.");
+    }
+    }
+
+
+
 }
 
