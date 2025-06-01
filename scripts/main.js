@@ -1,6 +1,4 @@
-if (!window.db) {
-    console.error("FireBase not initalized");
-}
+
 
 class FlashcardApp {
     constructor () {
