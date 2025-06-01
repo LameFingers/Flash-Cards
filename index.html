@@ -319,18 +319,6 @@
         });
     }
 
-    // Check redirect result first
-    firebase.auth().getRedirectResult()
-        .then((result) => {
-        if (result.user) {
-            console.log("✅ Redirect login successful:", result.user.email);
-        } else {
-            console.log("ℹ️ No redirect result, checking current user...");
-        }
-        })
-        .catch((error) => {
-        console.error("❌ Redirect Error:", error.message);
-        });
 
     // Monitor auth state
     firebase.auth().onAuthStateChanged((user) => {
