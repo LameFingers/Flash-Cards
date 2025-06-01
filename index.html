@@ -264,36 +264,33 @@
             </h1>
         </div>
     </div>
-<!-- ✅ Firebase SDKs (v8, must come first) -->
+
+<!-- ✅ Firebase SDKs -->
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
-<!-- ✅ Firebase setup and app launch -->
-<script>
+<!-- ✅ Firebase setup + app logic together -->
+<script type="module">
+  import { FlashcardApp } from './scripts/main.js'; // if you want to use module style
   window.addEventListener("load", () => {
-    if (!window.firebase || !firebase.firestore) {
-      console.error("❌ Firebase SDKs not loaded correctly.");
-      return;
-    }
-
     const firebaseConfig = {
-      apiKey: "...",
-      authDomain: "...",
-      projectId: "...",
-      storageBucket: "...",
-      messagingSenderId: "...",
-      appId: "...",
-      measurementId: "..."
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_AUTH_DOMAIN",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_BUCKET",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID",
+      measurementId: "YOUR_MEASUREMENT_ID"
     };
 
     firebase.initializeApp(firebaseConfig);
-    window.db = firebase.firestore(); // ✅ Now this works
+    window.db = firebase.firestore();
 
-    new FlashcardApp(); // ✅ Your app starts here
+    new FlashcardApp(); // ✅ Start app AFTER db is ready
   });
 </script>
 
-<!-- App logic (must come last) -->
-<script src="scripts/main.js"></script>
+  <!-- ✅ Load your main logic LAST -->
+  <script src="scripts/main.js"></script>
   </body>
 </html>
