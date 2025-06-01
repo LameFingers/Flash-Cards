@@ -294,22 +294,48 @@
     window.db = firebase.firestore();
     window.auth = firebase.auth();
 
-    // Trigger sign in
-    document.getElementById("google-login-btn").addEventListener("click", () => {
+    // Sign in trigger
+    const loginBtn = document.getElementById("google-login-btn");
+    if (loginBtn) {
+        loginBtn.addEventListener("click", () => {
         const provider = new firebase.auth.GoogleAuthProvider();
         window.auth.signInWithRedirect(provider);
-    });
+        });
+    }
 
-    // Reliable login check
-    window.auth.onAuthStateChanged((user) => {
-        if (user) {
-        console.log("User is signed in:", user);
-        document.getElementById("login-form").style.display = "none";
-        document.getElementById("start-screen").style.display = "none";
-        new FlashcardApp();
+    // Check redirect result first
+    firebase.auth().getRedirectResult()
+        .then((result) => {
+        if (result.user) {
+            console.log("✅ Redirect login successful:", result.user.email);
         } else {
-        console.log("User is not signed in.");
+            console.log("ℹ️ No redirect result, checking current user...");
+        }
+        })
+        .catch((error) => {
+        console.error("❌ Redirect Error:", error.message);
+        });
+
+    // Monitor auth state
+    firebase.auth().onAuthStateChanged((user) => {
+        console.log("🔄 Auth state changed:", user ? user.email : "No user");
+        if (user) {
+        // ✅ Hide login UI
+        const loginForm = document.getElementById("login-form");
+        if (loginForm) loginForm.style.display = "none";
+
+        const startScreen = document.getElementById("start-screen");
+        if (startScreen) startScreen.style.display = "none";
+
+        try {
+            console.log("⚙️ Initializing app...");
+            new FlashcardApp();
+        } catch (err) {
+            console.error("🔥 Error initializing FlashcardApp:", err);
+        }
+        } else {
         document.getElementById("login-form").style.display = "block";
+        document.getElementById("start-screen").style.display = "none"; // Optional fallback
         }
     });
     });
