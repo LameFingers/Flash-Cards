@@ -171,7 +171,7 @@ class FlashcardApp {
 
             alert(`Flashcard set "${setTitle}" saved online! ✅`);
         } catch (error) {
-            console.error("Error saving to Firestore:", error);
+            console.error("Error saving to Firestore:", error.message, error);
             alert("Something went wrong while saving.");
         }
     }
