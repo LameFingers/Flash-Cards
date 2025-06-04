@@ -184,18 +184,26 @@ class FlashcardApp {
 
             const libraryScreen = document.getElementById("library-screen");
             libraryScreen.innerHTML = `
-                <div style="display: flex; flex-direction: column; align-items: center; justify-content: flex-start; min-height: 100vh; padding: 20px;">
-                    <div id="library-banner" style="text-align: center; margin-bottom: 20px;">
-                        <h1>
-                            <button id="go-back-library" style="background: none; border: none; cursor: pointer;">
-                                <img src="images/Left-Arrow.svg" alt="library-back" id="library-left-icon">
-                            </button>
-                            Your Flashcard Sets
-                        </h1>
+                <div style="display: flex; flex-direction: column; align-items: center; padding: 30px; gap: 50px;">
+                    <div id="library-banner" style="width: 100%; display: flex; align-items: center;">
+                    <h1 style="display: flex; align-items: center;">
+                        <button id="go-back-library" style="background: none; border: none; cursor: pointer;">
+                        <img src="images/Left-Arrow.svg" alt="library-back" id="library-left-icon">
+                        </button>
+                        <span style="margin-left: 20px;">Your Flashcard Sets</span>
+                    </h1>
                     </div>
-                    <div id="library-content" style="width: 100%; max-width: 600px;"></div>
+                    <div id="library-content" style="
+                    flex: 1;
+                    overflow-y: auto;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    gap: 30px;
+                    width: 100%;
+                    "></div>
                 </div>
-            `;
+                `;
 
             const contentDiv = document.getElementById("library-content");
 
