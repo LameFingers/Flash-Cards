@@ -185,15 +185,17 @@ class FlashcardApp {
 
             const libraryScreen = document.getElementById("library-screen");
             libraryScreen.innerHTML = `
-                <div id="library-banner">
-                    <h1>
-                        <button id="go-back-library">
-                            <img src="images/Left-Arrow.svg" alt="library-back" id="library-left-icon">
-                        </button>
-                        Your Flashcard Sets
-                    </h1>
+                <div style="display: flex; flex-direction: column; align=items: center; justify-content: center; min-height: 100vh;">
+                    <div id="library-banner">
+                        <h1>
+                            <button id="go-back-library">
+                                <img src="images/Left-Arrow.svg" alt="library-back" id="library-left-icon">
+                            </button>
+                            Your Flashcard Sets
+                        </h1>
+                    </div>
+                    <div id="library-content" style="padding: 20px;"></div>
                 </div>
-                <div id="library-content" style="padding: 20px;"></div>
             `;
 
             const contentDiv = document.getElementById("library-content");
