@@ -31,7 +31,6 @@ class FlashcardApp {
             this.showLibraryScreen();
             this.loadLibrary();
         });
-        this.backBtnLib.addEventListener("click", () => this.showMenu());
         this.saveBtn.addEventListener("click", () => this.saveSet());
     }
 
