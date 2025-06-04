@@ -184,25 +184,28 @@ class FlashcardApp {
 
             const libraryScreen = document.getElementById("library-screen");
             libraryScreen.innerHTML = `
-                <div style="display: flex; flex-direction: column; height: 100vh;">
-                    <div id="library-banner" style="display: flex; align-items: center; padding: 20px;">
-                        <button id="go-back-library">
-                            <img src="images/Left-Arrow.svg" alt="library-back" id="library-left-icon">
-                        </button>
-                        <h1 style="flex: 1; text-align: center; margin-right: 30px;">Your Flashcard Sets</h1>
-                    </div>
-                    <div id="library-content" style="
-                        flex: 1;
-                        overflow-y: auto;
-                        scroll-behavior: smooth;
-                        display: flex;
-                        flex-direction: column;
-                        align-items: center;
-                        gap: 20px;
-                        padding: 30px;
-                    "></div>
+            <div style="display: flex; flex-direction: column; height: 100vh;">
+                <div id="library-banner" style="
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    position: relative;
+                    padding: 20px 0;
+                ">
+                    <button id="go-back-library" style="
+                        position: absolute;
+                        left: 40px;
+                        background: none;
+                        border: none;
+                        cursor: pointer;
+                ">
+                    <img src="images/Left-Arrow.svg" alt="library-back" id="library-left-icon">
+                </button>
+                <h1 style="margin: 0;">Your Flashcard Sets</h1>
                 </div>
-                `;
+                <div id="library-content"></div>
+            </div>
+`;
             const contentDiv = document.getElementById("library-content");
 
             snapshot.forEach(doc => {
