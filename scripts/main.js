@@ -190,7 +190,7 @@ class FlashcardApp {
                         <button id="go-back-library" style="background: none; border: none; cursor: pointer;">
                         <img src="images/Left-Arrow.svg" alt="library-back" id="library-left-icon">
                         </button>
-                        <span style="margin-left: 20px;">Your Flashcard Sets</span>
+                        <span style="margin-left: 20px;">Your Flashcard Set</span>
                     </h1>
                     </div>
                     <div id="library-content" style="
