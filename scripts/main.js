@@ -189,7 +189,7 @@ class FlashcardApp {
                         <button id="go-back-library">
                             <img src="images/Left-Arrow.svg" alt="library-back" id="library-left-icon">
                         </button>
-                        <h1 style="margin-left: 30px;">Your Flashcard Sets</h1>
+                        <h1 style="flex: 1; text-align: center; margin-right: 30px;">Your Flashcard Sets</h1>
                     </div>
                     <div id="library-content" style="
                         flex: 1;
@@ -198,12 +198,11 @@ class FlashcardApp {
                         display: flex;
                         flex-direction: column;
                         align-items: center;
-                        gap: 50px;
+                        gap: 20px;
                         padding: 30px;
                     "></div>
                 </div>
-            `;
-
+                `;
             const contentDiv = document.getElementById("library-content");
 
             snapshot.forEach(doc => {
