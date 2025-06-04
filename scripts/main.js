@@ -211,13 +211,7 @@ class FlashcardApp {
             cardDiv.style.border = "1px solid #000";
             cardDiv.style.padding = "10px";
             cardDiv.style.marginBottom = "15px";
-            cardDiv.style.cssText = `
-                border: 1px solid #000;
-                padding: 10px;
-                width: 100%;
-                max-width: 500px;
-                box-sizing: border-box;
-                `;
+            cardDiv.classList.add("library-card");
             cardDiv.innerHTML = `
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                         <div style="overflow-wrap: anywhere;">
