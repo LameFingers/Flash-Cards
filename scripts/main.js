@@ -211,17 +211,26 @@ class FlashcardApp {
             cardDiv.style.border = "1px solid #000";
             cardDiv.style.padding = "10px";
             cardDiv.style.marginBottom = "15px";
+            cardDiv.style.cssText = `
+                border: 1px solid #000;
+                padding: 10px;
+                width: 100%;
+                max-width: 500px;
+                box-sizing: border-box;
+                `;
             cardDiv.innerHTML = `
                 <div style="display: flex; justify-content: space-between; align-items: center;">
-                <div>
-                    <strong>${data.title}</strong>
-                    <p>${data.cards ? data.cards.length : 0} card(s)</p>
-                </div>
-                <button class="delete-set-btn" style="background: none; border: none; cursor: pointer; color: red;" title="Delete set">
+                        <div style="overflow-wrap: anywhere;">
+                            <strong>${data.title}</strong>
+                            <p>${data.cards ? data.cards.length : 0} card(s)</p>
+                        </div>
+                    <button class="delete-set-btn" style="background: none; border: none; cursor: pointer;" title="Delete set">
                     <img src="images/Trash.svg"/>
-                </button>
+                    </button>
                 </div>
-            `;
+                `;
+
+
 
             cardDiv.addEventListener("click", () => {
                 alert(`Clicked set: ${data.title}`);
