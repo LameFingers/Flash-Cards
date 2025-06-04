@@ -184,26 +184,25 @@ class FlashcardApp {
 
             const libraryScreen = document.getElementById("library-screen");
             libraryScreen.innerHTML = `
-                <div style="display: flex; flex-direction: column; align-items: center; padding: 30px; gap: 50px;">
-                    <div id="library-banner" style="width: 100%; display: flex; align-items: center;">
-                    <h1 style="display: flex; align-items: center;">
-                        <button id="go-back-library" style="background: none; border: none; cursor: pointer;">
-                        <img src="images/Left-Arrow.svg" alt="library-back" id="library-left-icon">
+                <div style="display: flex; flex-direction: column; height: 100vh;">
+                    <div id="library-banner" style="display: flex; align-items: center; padding: 20px;">
+                        <button id="go-back-library">
+                            <img src="images/Left-Arrow.svg" alt="library-back" id="library-left-icon">
                         </button>
-                        <span style="margin-left: 20px;">Your Flashcard Set</span>
-                    </h1>
+                        <h1 style="margin-left: 30px;">Your Flashcard Sets</h1>
                     </div>
                     <div id="library-content" style="
-                    flex: 1;
-                    overflow-y: auto;
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    gap: 30px;
-                    width: 100%;
+                        flex: 1;
+                        overflow-y: auto;
+                        scroll-behavior: smooth;
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        gap: 50px;
+                        padding: 30px;
                     "></div>
                 </div>
-                `;
+            `;
 
             const contentDiv = document.getElementById("library-content");
 
