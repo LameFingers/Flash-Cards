@@ -222,11 +222,16 @@
 
   <!-- Menu Screen -->
   <div id="menue-screen" style="display: none;">
-    <div id="banner" style="position: relative; padding: 20px 0;">
-      <button id="go-back" style="position: absolute; left: 40px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer;">
-        <img src="images/Left-Arrow.svg" alt="Back" id="Right-Arrow-Icon">
-      </button>
-      <h2 style="margin: 0;">Welcome to your Flashcards</h2>
+    <div id="banner">
+      <h2>Welcome to your Flashcards</h2>
+      <div id="navigation-cluster">
+        <button id="go-back">
+          <img src="images/Left-Arrow.svg" alt="Right-Arrow" id="Right-Arrow-Icon">
+        </button>
+        <button id="go-forward">
+          <img src="images/Right-Arrow.svg" alt="Left-Arrow" id="Left-Arrow-Icon">
+        </button>
+      </div>
       <div id="button-cluster">
         <button id="library-button">
           <img src="images/Library.svg" alt="library" id="library-icon">

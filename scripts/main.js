@@ -183,29 +183,17 @@ class FlashcardApp {
                 .get();
 
             const libraryScreen = document.getElementById("library-screen");
-            libraryScreen.innerHTML = `
+        libraryScreen.innerHTML = `
             <div style="display: flex; flex-direction: column; height: 100vh;">
-                <div id="library-banner" style="
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    position: relative;
-                    padding: 20px 0;
-                ">
-                    <button id="go-back-library" style="
-                        position: absolute;
-                        left: 40px;
-                        background: none;
-                        border: none;
-                        cursor: pointer;
-                ">
-                    <img src="images/Left-Arrow.svg" alt="library-back" id="library-left-icon">
-                </button>
-                <h1 style="margin: 0;">Your Flashcard Sets</h1>
+                <div id="library-banner" style="position: relative; padding: 20px 0; text-align: center;">
+                    <button id="go-back-library" style="position: absolute; left: 40px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer;">
+                        <img src="images/Left-Arrow.svg" alt="library-back" id="library-left-icon">
+                    </button>
+                    <h1 style="margin: 0; display: inline-block;">Your Flashcard Sets</h1>
                 </div>
                 <div id="library-content"></div>
             </div>
-`;
+            `;
             const contentDiv = document.getElementById("library-content");
 
             snapshot.forEach(doc => {
