@@ -186,11 +186,11 @@ class FlashcardApp {
         libraryScreen.innerHTML = `
             <div style="display: flex; flex-direction: column; height: 100vh;">
                 <div id="library-banner" style="position: relative; padding: 20px 0; text-align: center;">
-                    <button id="go-back-library" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer;">
-                        <img src="images/Left-Arrow.svg" alt="library-back" id="library-left-icon">
-                    </button>
                     <h1 style="margin: 0; display: inline-block;">Your Flashcard Sets</h1>
                 </div>
+                <button id="go-back-library" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer;">
+                    <img src="images/Left-Arrow.svg" alt="library-back" id="library-left-icon">
+                </button>
                 <div id="library-content"></div>
             </div>
             `;
