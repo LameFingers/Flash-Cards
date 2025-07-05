@@ -5,6 +5,8 @@ class FlashcardApp {
         this.flashcardScreen = document.getElementById("flashcard-screen");
         this.libraryScreen = document.getElementById("library-screen");
         this.menueScreen = document.getElementById("menue-screen");
+        this.practiceScreen = document.getElementById("practice-screen");
+        this.practiceScreenBtn = document.getElementById("practice");
         this.backBtn = document.getElementById("Right-Arrow-Icon");
         this.newSet = document.getElementById("new-set-icon");
         this.backBtnFlash = document.getElementById("go-back-flashcard");
@@ -32,6 +34,7 @@ class FlashcardApp {
             this.loadLibrary();
         });
         this.saveBtn.addEventListener("click", () => this.saveSet());
+        this.practiceScreenBtn.addEventListener("click", () => this.showPracticeScreen());
     }
 
     showStart() {
@@ -54,11 +57,17 @@ class FlashcardApp {
         this.libraryScreen.style.display = "flex";
     }
 
+    showPracticeScreen() {
+        this.hideAllScreens();
+        this.practiceScreen.style.display = "flex";
+    }
+
     hideAllScreens() {
         this.startScreen.style.display = "none";
         this.menueScreen.style.display = "none";
         this.flashcardScreen.style.display = "none";
         this.libraryScreen.style.display = "none";
+        this.practiceScreen.style.display = "none";
     }
 
     addFlashcard() {
