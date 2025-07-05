@@ -7,6 +7,7 @@ class FlashcardApp {
         this.menueScreen = document.getElementById("menue-screen");
         this.practiceScreen = document.getElementById("practice-screen");
         this.practiceScreenBtn = document.getElementById("practice");
+        this.backBtnPractice = document.getElementById("go-back-practice");
         this.backBtn = document.getElementById("Right-Arrow-Icon");
         this.newSet = document.getElementById("new-set-icon");
         this.backBtnFlash = document.getElementById("go-back-flashcard");
@@ -35,6 +36,7 @@ class FlashcardApp {
         });
         this.saveBtn.addEventListener("click", () => this.saveSet());
         this.practiceScreenBtn.addEventListener("click", () => this.showPracticeScreen());
+        this.backBtnPractice.addEventListener("click", () => this.showMenu());
     }
 
     showStart() {

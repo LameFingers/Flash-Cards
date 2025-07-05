@@ -50,8 +50,8 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      height: 45vh;
-      gap: 15px;
+      height: 25vh;
+      gap: 5px;
     }
 
     #navigation-cluster {
@@ -199,6 +199,13 @@
       padding: 30px;
     }
 
+    #practice-banner button {
+      background: none;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      margin-left: 30px;
+    }
 
 
   </style>
@@ -291,6 +298,11 @@
 
   <!-- Practice Screen -->
   <div id="practice-screen" style="display: none;">
+    <div id="practice-banner">
+        <button id="go-back-practice">
+          <img src="images/Left-Arrow.svg" alt="practice-back" id="practice-back-icon">
+        </button>
+    </div>
   </div>
 
 
