@@ -148,10 +148,55 @@ class FlashcardApp {
         }
     }
 
-    showPracticeScreen() {
+    async showPracticeScreen() {
         this.hideAllScreens();
         this.practiceScreen.style.display = "flex";
+
+        // Show the set selection list and hide the card viewer
+        document.getElementById("practice-set-selection").style.display = "flex";
+        document.getElementById("practice-card-view").style.display = "none";
+        
+        // Re-attach the main back button listener
         this.safeAddEventListener("go-back-practice", "click", () => this.showMenu());
+
+        const user = window.auth.currentUser;
+        if (!user) return;
+
+        const setListDiv = document.getElementById("practice-set-list");
+        setListDiv.innerHTML = ""; // Clear old list
+
+        try {
+            const snapshot = await window.db.collection("flashcardSets").doc(user.uid).collection("sets").orderBy("createdAt", "desc").get();
+            if (snapshot.empty) {
+                setListDiv.innerHTML = "<p>You have no sets to practice.</p>";
+                return;
+            }
+
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                const setItem = document.createElement("div");
+                setItem.className = "practice-set-item";
+                setItem.innerHTML = `
+                    <div>
+                        <strong>${data.title}</strong>
+                        <p>${data.cards ? data.cards.length : 0} card(s)</p>
+                    </div>
+                    <span>▶</span>
+                `;
+                // Add click listener to start the practice session for this set
+                setItem.addEventListener("click", () => {
+                    if (data.cards && data.cards.length > 0) {
+                        this.startPracticeSession(data.cards);
+                    } else {
+                        alert("This set has no cards to practice.");
+                    }
+                });
+                setListDiv.appendChild(setItem);
+            });
+        } catch (err) {
+            console.error("Error loading sets for practice:", err);
+            alert("Failed to load your sets.");
+        }
     }
 
     // --- Utility Methods ---
@@ -211,6 +256,49 @@ class FlashcardApp {
             textarea.addEventListener("input", expand);
             expand();
         });
+    }
+
+    startPracticeSession(cards) {
+        // Hide the set selection and show the card viewer
+        document.getElementById("practice-set-selection").style.display = "none";
+        document.getElementById("practice-card-view").style.display = "flex";
+
+        let currentIndex = 0;
+        const cardElement = document.getElementById("practice-card");
+        const frontFace = cardElement.querySelector(".card-front");
+        const backFace = cardElement.querySelector(".card-back");
+        const progressIndicator = document.getElementById("practice-progress");
+
+        const updateCard = () => {
+            cardElement.classList.remove("is-flipped"); // Always show front first
+            frontFace.textContent = cards[currentIndex].term;
+            backFace.textContent = cards[currentIndex].definition;
+            progressIndicator.textContent = `Card ${currentIndex + 1} of ${cards.length}`;
+        };
+
+        // Button listeners for the practice session
+        document.getElementById("practice-flip-card").onclick = () => cardElement.classList.toggle("is-flipped");
+        cardElement.onclick = () => cardElement.classList.toggle("is-flipped");
+
+        document.getElementById("practice-next-card").onclick = () => {
+            if (currentIndex < cards.length - 1) {
+                currentIndex++;
+                updateCard();
+            }
+        };
+        document.getElementById("practice-prev-card").onclick = () => {
+            if (currentIndex > 0) {
+                currentIndex--;
+                updateCard();
+            }
+        };
+        
+        // Listener to exit the session
+        document.getElementById("practice-exit-session").onclick = () => {
+            this.showPracticeScreen(); // Go back to the set selection list
+        };
+
+        updateCard(); // Load the first card
     }
 
     async saveSet() {
