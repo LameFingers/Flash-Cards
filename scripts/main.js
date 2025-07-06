@@ -158,12 +158,12 @@ class FlashcardApp {
             termInput.type = "text";
             termInput.className = "term";
             termInput.placeholder = "Term";
-            termInput.value = cardData.term; // Safely sets the term
+            termInput.value = cardData.term;
 
             const definitionTextarea = document.createElement("textarea");
             definitionTextarea.className = "definition";
             definitionTextarea.placeholder = "Definition";
-            definitionTextarea.textContent = cardData.definition; // Safely sets the definition
+            definitionTextarea.textContent = cardData.definition;
 
             const deleteButton = document.createElement("button");
             deleteButton.className = "delete-card";
@@ -171,10 +171,9 @@ class FlashcardApp {
             deleteButton.addEventListener("click", () => this.deleteFlashcard(newCard));
 
             newCard.appendChild(termInput);
-            newCard.appendChild(definitionTextarea);
+            newCard.appendChild(definitionTextarea); // Corrected this line
             newCard.appendChild(deleteButton);
 
-            // Insert the new card before the 'Add Card' and 'Save Set' buttons
             flashcardContent.insertBefore(newCard, buttonContainer);
         });
 
