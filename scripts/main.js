@@ -57,15 +57,15 @@ class FlashcardApp {
     showFlashcardScreen() {
         this.hideAllScreens();
         this.flashcardScreen.style.display = "flex";
-        this.currentSetId = null; // Reset to ensure it's a new set
+        this.currentSetId = null;
 
-        // Clear previous content
         document.getElementById("set-title").value = "";
         document.querySelectorAll(".card-container").forEach(card => card.remove());
 
+        // Add the first blank card for the new set
         this.addFlashcard();
 
-        // Safely set up listeners for this screen
+        // Safely set up listeners for the screen's buttons
         this.safeAddEventListener("go-back-flashcard", "click", () => this.showMenu());
         this.safeAddEventListener("add-card", "click", () => this.addFlashcard());
         this.safeAddEventListener("save-set", "click", () => this.saveSet());
@@ -144,23 +144,24 @@ class FlashcardApp {
         this.flashcardScreen.style.display = "flex";
         this.currentSetId = setId;
 
-        // Populate the form with the set's data
         document.getElementById("set-title").value = setData.title;
         document.querySelectorAll(".card-container").forEach(card => card.remove());
+        
         setData.cards.forEach(cardData => {
+            const flashcardContent = document.getElementById("flashcard-content");
             const newCard = document.createElement("div");
             newCard.className = "card-container";
             newCard.innerHTML = `
                 <input type="text" class="term" value="${cardData.term}">
                 <textarea class="definition">${cardData.definition}</textarea>
-                <button class="delete-card"><img src="images/Trash.svg"></button>
+                <button class="delete-card"><img src="images/Trash.svg" alt="Delete"></button>
             `;
             newCard.querySelector(".delete-card").addEventListener("click", () => newCard.remove());
-            const buttonContainer = document.querySelector(".button-container");
-            document.getElementById("flashcard-content").insertBefore(newCard, buttonContainer);
+            const buttonContainer = flashcardContent.querySelector(".button-container");
+            flashcardContent.insertBefore(newCard, buttonContainer);
         });
-        
-        // Re-attach listeners for the screen
+
+        // Safely set up listeners for the screen's buttons
         this.safeAddEventListener("go-back-flashcard", "click", () => this.showMenu());
         this.safeAddEventListener("add-card", "click", () => this.addFlashcard());
         this.safeAddEventListener("save-set", "click", () => this.saveSet());
