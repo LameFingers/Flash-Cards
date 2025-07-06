@@ -43,6 +43,18 @@
       height: 100vh;
     }
 
+    #flashcard-banner, #library-banner, #practice-banner {
+      display: flex;
+      align-items: center;
+      padding: 1rem;
+    }
+
+    #flashcard-banner h1, #library-banner h1, #practice-banner h1 {
+      flex-grow: 1;
+      text-align: center;
+      margin: 0;
+    }
+
     #banner button {
       background: none;
       border: none;
@@ -74,7 +86,6 @@
       border: none;
       padding: 0;
       cursor: pointer;
-      margin-left: 30px;
     }
 
     #flashcard-content {
@@ -211,7 +222,6 @@
       border: none;
       padding: 0;
       cursor: pointer;
-      margin-left: 30px;
     }
 
 
@@ -263,30 +273,21 @@
   <!-- Flashcard Screen -->
   <div id="flashcard-screen" style="display: none;">
     <div id="flashcard-banner">
-      <h1>
-        <button id="go-back-flashcard">
-          <img src="images/Left-Arrow.svg" alt="flashcard-left-arrow" id="flashcard-left-icon">
-        </button>
-      </h1>
+      <button id="go-back-flashcard">
+        <img src="images/Left-Arrow.svg" alt="flashcard-left-arrow" id="flashcard-left-icon">
+      </button>
+      <h1>Create New Set</h1>
     </div>
     <div id="flashcard-content">
-      <input type="text" id="set-title" placeholder="Enter title for your flashcard set">
-      <div class="card-container" data-index="0">
-        <input type="text" class="term" placeholder="Term">
-        <textarea class="definition" placeholder="Definition"></textarea>
-        <button class="delete-card">
-          <img src="images/Trash.svg" alt="trash-icon" />
+      </div>
+  </div>
+
+  <div id="practice-screen" style="display: none;">
+    <div id="practice-banner">
+        <button id="go-back-practice">
+          <img src="images/Left-Arrow.svg" alt="practice-back" id="practice-back-icon">
         </button>
-      </div>
-      <div class="button-container">
-        <button id="add-card">+ Add Card</button>
-        <button id="save-set">Save Set</button>
-      </div>
-      <div id="trash">
-        <button>
-          <img src="images/Trash.svg" alt="trash" id="trash-button">
-        </button>
-      </div>
+        <h1>Practice</h1>
     </div>
   </div>
 

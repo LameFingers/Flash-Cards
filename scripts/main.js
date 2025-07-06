@@ -260,70 +260,66 @@ class FlashcardApp {
                 .get();
 
             const libraryScreen = document.getElementById("library-screen");
-        libraryScreen.innerHTML = `
-            <div style="display: flex; flex-direction: column; height: 100vh;">
-                <div id="library-banner" style="position: relative; padding: 20px 0; text-align: center;">
-                    <h1 style="margin: 0; display: inline-block;">Your Flashcard Sets</h1>
+
+            // Clear the screen and build the new, consistent structure
+            libraryScreen.innerHTML = `
+                <div id="library-banner">
+                    <button id="go-back-library">
+                        <img src="images/Left-Arrow.svg" alt="library-back" id="library-left-icon">
+                    </button>
+                    <h1>Your Flashcard Sets</h1>
                 </div>
-                <button id="go-back-library" style="position: absolute; background: none, border: none, padding: 0, cursor: pointer, margin-left: 30px">
-                    <img src="images/Left-Arrow.svg" alt="library-back" id="library-left-icon">
-                </button>
                 <div id="library-content"></div>
-            </div>
             `;
+
             const contentDiv = document.getElementById("library-content");
 
             snapshot.forEach(doc => {
-            const data = doc.data();
-            const cardDiv = document.createElement("div");
-            cardDiv.style.border = "1px solid #000";
-            cardDiv.style.padding = "10px";
-            cardDiv.style.marginBottom = "15px";
-            cardDiv.classList.add("library-card");
-            cardDiv.innerHTML = `
-                <div style="display: flex; justify-content: space-between; align-items: center;">
+                const data = doc.data();
+                const cardDiv = document.createElement("div");
+                cardDiv.style.border = "1px solid #000";
+                cardDiv.style.padding = "10px";
+                cardDiv.style.marginBottom = "15px";
+                cardDiv.classList.add("library-card");
+                cardDiv.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
                         <div style="overflow-wrap: anywhere;">
                             <strong>${data.title}</strong>
                             <p>${data.cards ? data.cards.length : 0} card(s)</p>
                         </div>
-                    <button class="delete-set-btn" style="background: none; border: none; cursor: pointer;" title="Delete set">
-                    <img src="images/Trash.svg"/>
-                    </button>
-                    <button class="testing" style="background: none; border: none; cursor: pointer;" title="Delete set">
-                        <img src="images/Practice.svg"/>
-                    </button>
-                </div>
+                        <button class="delete-set-btn" style="background: none; border: none; cursor: pointer;" title="Delete set">
+                            <img src="images/Trash.svg"/>
+                        </button>
+                    </div>
                 `;
 
+                cardDiv.addEventListener("click", () => {
+                    this.editSet(doc.id, doc.data());
+                });
 
+                const deleteBtn = cardDiv.querySelector(".delete-set-btn");
+                deleteBtn.addEventListener("click", async (e) => {
+                    e.stopPropagation();
+                    const confirmed = confirm(`Are you sure you want to delete "${data.title}"?`);
+                    if (!confirmed) return;
 
-            cardDiv.addEventListener("click", () => {
-                this.editSet(doc.id, doc.data());
-            });
+                    try {
+                        await window.db
+                            .collection("flashcardSets")
+                            .doc(user.uid)
+                            .collection("sets")
+                            .doc(doc.id)
+                            .delete();
 
-            const deleteBtn = cardDiv.querySelector(".delete-set-btn");
-            deleteBtn.addEventListener("click", async (e) => {
-                e.stopPropagation();
-                const confirmed = confirm(`Are you sure you want to delete "${data.title}"?`);
-                if (!confirmed) return;
+                        cardDiv.remove();
+                        alert(`"${data.title}" has been deleted.`);
+                    } catch (error) {
+                        console.error("Failed to delete set:", error);
+                        alert("Failed to delete the set.");
+                    }
+                });
 
-                try {
-                await window.db
-                    .collection("flashcardSets")
-                    .doc(user.uid)
-                    .collection("sets")
-                    .doc(doc.id)
-                    .delete();
-
-                cardDiv.remove();
-                alert(`"${data.title}" has been deleted.`);
-                } catch (error) {
-                console.error("Failed to delete set:", error);
-                alert("Failed to delete the set.");
-                }
-            });
-
-            contentDiv.appendChild(cardDiv);
+                contentDiv.appendChild(cardDiv);
             });
 
             document.getElementById("go-back-library")
