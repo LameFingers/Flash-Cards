@@ -289,6 +289,9 @@ class FlashcardApp {
                     <button class="delete-set-btn" style="background: none; border: none; cursor: pointer;" title="Delete set">
                     <img src="images/Trash.svg"/>
                     </button>
+                    <button class="testing" style="background: none; border: none; cursor: pointer;" title="Delete set">
+                        <img src="images/Practice.svg"/>
+                    </button>
                 </div>
                 `;
 
