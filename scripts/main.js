@@ -148,6 +148,60 @@ class FlashcardApp {
         }
     }
 
+    async showPracticeScreen() {
+        this.hideAllScreens();
+        this.practiceScreen.style.display = "flex";
+
+        // Show the set selection list and hide the card viewer
+        const setSelection = document.getElementById("practice-set-selection");
+        const cardView = document.getElementById("practice-card-view");
+        if (setSelection) setSelection.style.display = "flex";
+        if (cardView) cardView.style.display = "none";
+        
+        // Re-attach the main back button listener for the practice screen
+        this.safeAddEventListener("go-back-practice", "click", () => this.showMenu());
+
+        const user = window.auth.currentUser;
+        if (!user) return;
+
+        const setListDiv = document.getElementById("practice-set-list");
+        if (!setListDiv) return; // Exit if the list container doesn't exist
+        setListDiv.innerHTML = ""; // Clear old list
+
+        try {
+            const snapshot = await window.db.collection("flashcardSets").doc(user.uid).collection("sets").orderBy("createdAt", "desc").get();
+            if (snapshot.empty) {
+                setListDiv.innerHTML = "<p>You have no sets to practice.</p>";
+                return;
+            }
+
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                const setItem = document.createElement("div");
+                setItem.className = "practice-set-item";
+                setItem.innerHTML = `
+                    <div>
+                        <strong>${data.title}</strong>
+                        <p>${data.cards ? data.cards.length : 0} card(s)</p>
+                    </div>
+                    <span>▶</span>
+                `;
+                // Add click listener to start the practice session for this set
+                setItem.addEventListener("click", () => {
+                    if (data.cards && data.cards.length > 0) {
+                        this.startPracticeSession(data.cards);
+                    } else {
+                        alert("This set has no cards to practice.");
+                    }
+                });
+                setListDiv.appendChild(setItem);
+            });
+        } catch (err) {
+            console.error("Error loading sets for practice:", err);
+            alert("Failed to load your sets.");
+        }
+    }
+
     startPracticeSession(cards) {
         // Hide the set selection and show the card viewer
         document.getElementById("practice-set-selection").style.display = "none";
