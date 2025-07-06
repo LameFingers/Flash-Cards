@@ -322,54 +322,57 @@
   <script src="scripts/main.js"></script>
 
   <script>
-    window.addEventListener("load", () => {
-      const firebaseConfig = {
-        apiKey: "AIzaSyBCBimbSxCV2hYG-zRnafnboZ4cLLUn0HM",
-        authDomain: "flashcard-project-9a333.firebaseapp.com",
-        projectId: "flashcard-project-9a333",
-        storageBucket: "flashcard-project-9a333.appspot.com",
-        messagingSenderId: "257132736136",
-        appId: "1:257132736136:web:6e6af47a5058f3521cf93d",
-        measurementId: "G-01KYS5PVEE"
-      };
+      window.addEventListener("load", () => {
+        const firebaseConfig = {
+          apiKey: "AIzaSyBCBimbSxCV2hYG-zRnafnboZ4cLLUn0HM",
+          authDomain: "flashcard-project-9a333.firebaseapp.com",
+          projectId: "flashcard-project-9a333",
+          storageBucket: "flashcard-project-9a333.appspot.com",
+          messagingSenderId: "257132736136",
+          appId: "1:257132736136:web:6e6af47a5058f3521cf93d",
+          measurementId: "G-01KYS5PVEE"
+        };
 
-      firebase.initializeApp(firebaseConfig);
-      window.db = firebase.firestore();
-      window.auth = firebase.auth();
+        firebase.initializeApp(firebaseConfig);
+        window.db = firebase.firestore();
+        window.auth = firebase.auth();
 
-     const loginBtn = document.getElementById("google-login-btn");
-      if (loginBtn) {
-        loginBtn.addEventListener("click", () => {
-          const provider = new firebase.auth.GoogleAuthProvider();
-          window.auth.signInWithPopup(provider)
-            .catch(error => {
+        // This will hold the single instance of our app to prevent conflicts
+        let flashcardAppInstance = null;
+
+        const loginBtn = document.getElementById("google-login-btn");
+        if (loginBtn) {
+          loginBtn.addEventListener("click", () => {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            // The .then() block has been removed, as onAuthStateChanged will handle the rest
+            window.auth.signInWithPopup(provider).catch(error => {
               console.error("❌ Login popup error:", error);
             });
-        });
-      }
-
-      firebase.auth().onAuthStateChanged((user) => {
-        console.log("🔄 Auth state changed:", user ? user.email : "No user");
-        if (user) {
-          document.getElementById("start-screen").style.display = "none";
-          document.getElementById("menue-screen").style.display = "block"; // Show the menu
-          
-          // Create a single instance of the app
-          if (!flashcardAppInstance) {
-            try {
-              flashcardAppInstance = new FlashcardApp();
-            } catch (err) {
-              console.error("🔥 Error initializing FlashcardApp:", err);
-            }
-          }
-        } else {
-          document.getElementById("start-screen").style.display = "flex";
-          document.getElementById("menue-screen").style.display = "none"; // Hide the menu
-
-          flashcardAppInstance = null; // Reset the instance
+          });
         }
+
+        // This is now the ONLY place where the app is initialized and screens are shown
+        firebase.auth().onAuthStateChanged((user) => {
+          console.log("🔄 Auth state changed:", user ? user.email : "No user");
+          if (user) {
+            document.getElementById("start-screen").style.display = "none";
+            document.getElementById("menue-screen").style.display = "block";
+            
+            // Only create the app instance if it doesn't already exist
+            if (!flashcardAppInstance) {
+              try {
+                flashcardAppInstance = new FlashcardApp();
+              } catch (err) {
+                console.error("🔥 Error initializing FlashcardApp:", err);
+              }
+            }
+          } else {
+            document.getElementById("start-screen").style.display = "flex";
+            document.getElementById("menue-screen").style.display = "none";
+            flashcardAppInstance = null; // Clear the instance on logout
+          }
+        });
       });
-    });
-  </script>
-</body>
+    </script>
+  </body>
 </html>

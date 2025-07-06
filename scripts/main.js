@@ -1,34 +1,30 @@
 class FlashcardApp {
  constructor () {
-    // Screen containers
         this.startScreen = document.getElementById("start-screen");
         this.menueScreen = document.getElementById("menue-screen");
         this.flashcardScreen = document.getElementById("flashcard-screen");
         this.libraryScreen = document.getElementById("library-screen");
         this.practiceScreen = document.getElementById("practice-screen");
-
-        // Menu Screen Buttons
-        this.libraryButton = document.getElementById("library-button");
-        this.newSet = document.getElementById("new-set");
-        this.practiceScreenBtn = document.getElementById("practice");
-        this.backBtn = document.getElementById("go-back");
-
-        // Other essential elements that exist at startup
         this.startBtn = document.getElementById("starting-button");
         this.currentSetId = null;
 
-        // Set up the initial event listeners
-        this.setupEventListener();
+        this.setupMenuEventListeners();
     
     }
 
-    setupEventListener() {
-        this.startBtn.addEventListener("click", () => this.showMenu());
-        this.backBtn.addEventListener("click", () => this.showStart());
-        
-        this.libraryButton.addEventListener("click", () => this.showLibraryScreen());
-        this.newSet.addEventListener("click", () => this.showFlashcardScreen());
-        this.practiceScreenBtn.addEventListener("click", () => this.showPracticeScreen());
+    setupMenuEventListeners() {
+        document.getElementById("go-back").addEventListener("click", () => this.showStart());
+        document.getElementById("library-button").addEventListener("click", () => this.showLibraryScreen());
+        document.getElementById("new-set").addEventListener("click", () => this.showFlashcardScreen());
+        document.getElementById("practice").addEventListener("click", () => this.showPracticeScreen());
+    }
+
+    hideAllScreens() {
+        this.startScreen.style.display = "none";
+        this.menueScreen.style.display = "none";
+        this.flashcardScreen.style.display = "none";
+        this.libraryScreen.style.display = "none";
+        this.practiceScreen.style.display = "none";
     }
 
     showStart() {
@@ -65,13 +61,6 @@ class FlashcardApp {
         document.getElementById("go-back-practice").addEventListener("click", () => this.showMenu());
     }
 
-    hideAllScreens() {
-        this.startScreen.style.display = "none";
-        this.menueScreen.style.display = "none";
-        this.flashcardScreen.style.display = "none";
-        this.libraryScreen.style.display = "none";
-        this.practiceScreen.style.display = "none";
-    }
 
     addFlashcard() {
         const cardIndex = document.querySelectorAll(".card-container").length;
