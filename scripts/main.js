@@ -1,22 +1,33 @@
 class FlashcardApp {
- constructor () {
+    constructor() {
+        // --- Step 1: Define screen containers ---
         this.startScreen = document.getElementById("start-screen");
         this.menueScreen = document.getElementById("menue-screen");
         this.flashcardScreen = document.getElementById("flashcard-screen");
         this.libraryScreen = document.getElementById("library-screen");
         this.practiceScreen = document.getElementById("practice-screen");
-        this.startBtn = document.getElementById("starting-button");
         this.currentSetId = null;
 
+        // --- Step 2: Set up the initial event listeners ---
+        this.safeAddEventListener("starting-button", "click", () => this.showMenu());
         this.setupMenuEventListeners();
-    
+    }
+
+    safeAddEventListener(id, event, handler) {
+        const element = document.getElementById(id);
+        if (element) {
+            element.addEventListener(event, handler);
+        } else {
+            // This message helps in debugging but doesn't crash the app.
+            console.warn(`Element with ID '${id}' not found. Listener not attached.`);
+        }
     }
 
     setupMenuEventListeners() {
-        document.getElementById("go-back").addEventListener("click", () => this.showStart());
-        document.getElementById("library-button").addEventListener("click", () => this.showLibraryScreen());
-        document.getElementById("new-set").addEventListener("click", () => this.showFlashcardScreen());
-        document.getElementById("practice").addEventListener("click", () => this.showPracticeScreen());
+        this.safeAddEventListener("go-back", "click", () => this.showStart());
+        this.safeAddEventListener("library-button", "click", () => this.showLibraryScreen());
+        this.safeAddEventListener("new-set", "click", () => this.showFlashcardScreen());
+        this.safeAddEventListener("practice", "click", () => this.showPracticeScreen());
     }
 
     hideAllScreens() {
@@ -41,10 +52,9 @@ class FlashcardApp {
         this.hideAllScreens();
         this.flashcardScreen.style.display = "flex";
 
-        document.getElementById("go-back-flashcard").addEventListener("click", () => this.showMenu());
-        document.getElementById("add-card").addEventListener("click", () => this.addFlashcard());
-        document.getElementById("save-set").addEventListener("click", () => this.saveSet());
-        document.getElementById("trash-button").addEventListener("click", () => this.deleteLastFlashcard());
+        this.safeAddEventListener("go-back-flashcard", "click", () => this.showMenu());
+        this.safeAddEventListener("add-card", "click", () => this.addFlashcard());
+        this.safeAddEventListener("save-set", "click", () => this.saveSet());
         
         this.autoExpandTextAreas();
     }
@@ -63,12 +73,10 @@ class FlashcardApp {
 
 
     addFlashcard() {
-        const cardIndex = document.querySelectorAll(".card-container").length;
-
+        const flashcardContent = document.getElementById("flashcard-content");
+        if (!flashcardContent) return;
         const newCard = document.createElement("div");
         newCard.classList.add("card-container");
-        newCard.setAttribute("data-index", cardIndex);
-
         newCard.innerHTML = `
             <input type="text" class="term" placeholder="Term">
             <textarea class="definition" placeholder="Definition"></textarea>
@@ -76,21 +84,16 @@ class FlashcardApp {
                 <img src="images/Trash.svg" alt="trash-icon" />
             </button>
         `;
-
-        newCard.querySelector(".delete-card").addEventListener("click", () => {
-            this.deleteFlashcard(newCard);
-        });
-
-        const buttonContainer = document.querySelector(".button-container");
-        this.flashcardContent.insertBefore(newCard, buttonContainer);
-        this.updateCardIndices();
+        newCard.querySelector(".delete-card").addEventListener("click", () => this.deleteFlashcard(newCard));
+        const buttonContainer = flashcardContent.querySelector(".button-container");
+        if (buttonContainer) {
+            flashcardContent.insertBefore(newCard, buttonContainer);
+        }
         this.autoExpandTextAreas();
-        this.flashcardContent.scrollTop = this.flashcardContent.scrollHeight;
     }
 
     deleteFlashcard(cardElement) {
         cardElement.remove();
-        this.updateCardIndices();
     }
 
     deleteLastFlashcard() {
@@ -108,14 +111,13 @@ class FlashcardApp {
     }
 
     autoExpandTextAreas() {
-        const textareas = document.querySelectorAll(".definition");
-        textareas.forEach(textarea => {
-            textarea.addEventListener("input", function () {
-                this.style.height = "auto";
-                this.style.height = this.scrollHeight + "px";
-            });
-            textarea.style.height = "auto";
-            textarea.style.height = textarea.scrollHeight + "px";
+        document.querySelectorAll(".definition").forEach(textarea => {
+            const expand = () => {
+                textarea.style.height = "auto";
+                textarea.style.height = (textarea.scrollHeight) + "px";
+            };
+            textarea.addEventListener("input", expand);
+            expand(); // Initial expansion
         });
     }
 
