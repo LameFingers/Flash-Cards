@@ -1,42 +1,34 @@
 class FlashcardApp {
  constructor () {
-    this.startBtn = document.getElementById("starting-button");
-    this.startScreen = document.getElementById("start-screen");
-    this.flashcardScreen = document.getElementById("flashcard-screen");
-    this.libraryScreen = document.getElementById("library-screen");
-    this.menueScreen = document.getElementById("menue-screen");
-    this.practiceScreen = document.getElementById("practice-screen");
-    this.practiceScreenBtn = document.getElementById("practice");
-    this.backBtnPractice = document.getElementById("go-back-practice");
-    this.backBtn = document.getElementById("go-back");
-    this.newSet = document.getElementById("new-set");
-    this.backBtnFlash = document.getElementById("go-back-flashcard");
-    this.addCardBtn = document.getElementById("add-card");
-    this.trashBtn = document.getElementById("trash-button");
-    this.flashcardContent = document.getElementById("flashcard-content");
-    this.libraryButton = document.getElementById("library-button");
-    this.saveBtn = document.getElementById("save-set");
-    this.currentSetId = null;
+    // Screen containers
+        this.startScreen = document.getElementById("start-screen");
+        this.menueScreen = document.getElementById("menue-screen");
+        this.flashcardScreen = document.getElementById("flashcard-screen");
+        this.libraryScreen = document.getElementById("library-screen");
+        this.practiceScreen = document.getElementById("practice-screen");
 
-    this.autoExpandTextAreas();
-    this.setupEventListener();
+        // Menu Screen Buttons
+        this.libraryButton = document.getElementById("library-button");
+        this.newSet = document.getElementById("new-set");
+        this.practiceScreenBtn = document.getElementById("practice");
+        this.backBtn = document.getElementById("go-back");
+
+        // Other essential elements that exist at startup
+        this.startBtn = document.getElementById("starting-button");
+        this.currentSetId = null;
+
+        // Set up the initial event listeners
+        this.setupEventListener();
     
     }
 
     setupEventListener() {
         this.startBtn.addEventListener("click", () => this.showMenu());
         this.backBtn.addEventListener("click", () => this.showStart());
+        
+        this.libraryButton.addEventListener("click", () => this.showLibraryScreen());
         this.newSet.addEventListener("click", () => this.showFlashcardScreen());
-        this.backBtnFlash.addEventListener("click", () => this.showMenu());
-        this.addCardBtn.addEventListener("click", () => this.addFlashcard());
-        this.trashBtn.addEventListener("click", () => this.deleteLastFlashcard());
-        this.libraryButton.addEventListener("click", () => {
-            this.showLibraryScreen();
-            this.loadLibrary();
-        });
-        this.saveBtn.addEventListener("click", () => this.saveSet());
         this.practiceScreenBtn.addEventListener("click", () => this.showPracticeScreen());
-        this.backBtnPractice.addEventListener("click", () => this.showMenu());
     }
 
     showStart() {
@@ -52,16 +44,25 @@ class FlashcardApp {
     showFlashcardScreen() {
         this.hideAllScreens();
         this.flashcardScreen.style.display = "flex";
+
+        document.getElementById("go-back-flashcard").addEventListener("click", () => this.showMenu());
+        document.getElementById("add-card").addEventListener("click", () => this.addFlashcard());
+        document.getElementById("save-set").addEventListener("click", () => this.saveSet());
+        document.getElementById("trash-button").addEventListener("click", () => this.deleteLastFlashcard());
+        
+        this.autoExpandTextAreas();
     }
 
     showLibraryScreen() {
         this.hideAllScreens();
         this.libraryScreen.style.display = "flex";
+        this.loadLibrary();
     }
 
     showPracticeScreen() {
         this.hideAllScreens();
         this.practiceScreen.style.display = "flex";
+        document.getElementById("go-back-practice").addEventListener("click", () => this.showMenu());
     }
 
     hideAllScreens() {
