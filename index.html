@@ -206,40 +206,37 @@
     /* Main container for the library screen */
     #library-screen {
       display: flex;
-      flex-direction: column; /* Stacks the banner and content vertically */
+      flex-direction: column;
       height: 100vh;
     }
 
-    /* The banner at the top */
     #library-banner {
         display: flex;
-        align-items: center; /* Vertically centers the title and back button */
+        align-items: center;
         padding: 1rem;
-        flex-shrink: 0; /* Prevents the banner from shrinking */
+        flex-shrink: 0;
     }
 
     #library-banner h1 {
-        flex-grow: 1; /* Allows the title to take up extra space */
+        flex-grow: 1;
         text-align: center;
         margin: 0;
     }
 
-    /* The area that holds the list of cards */
     #library-content {
-      flex-grow: 1; /* Allows this area to fill the remaining space */
-      overflow-y: auto; /* Adds a scrollbar if the content overflows */
+      flex-grow: 1;
+      overflow-y: auto;
       display: flex;
-      flex-direction: column; /* Stacks the cards vertically */
-      align-items: center;   /* Horizontally centers the cards */
+      flex-direction: column;
+      align-items: center;
       padding: 20px;
-      gap: 15px; /* Creates consistent spacing between cards */
+      gap: 15px;
     }
 
-    /* Individual flashcard sets in the list */
     .library-card {
       display: flex;
-      justify-content: space-between; /* Pushes title and trash icon to opposite ends */
-      align-items: center; /* Vertically aligns the content and trash icon */
+      justify-content: space-between; 
+      align-items: center; 
       background-color: #fff;
       border: 1px solid #ddd;
       border-radius: 8px;
@@ -250,11 +247,10 @@
       box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
 
-    /* The clickable area with the title and card count */
     .library-card-content {
       flex-grow: 1;
       cursor: pointer;
-      overflow: hidden; /* Prevents long titles from breaking the layout */
+      overflow: hidden;
       text-overflow: ellipsis;
     }
 
@@ -264,7 +260,6 @@
         font-size: 0.9em;
     }
 
-    /* The delete button */
     .delete-set-btn {
       background: none;
       border: none;
@@ -278,6 +273,11 @@
       border: none;
       padding: 0;
       cursor: pointer;
+    }
+
+    #practice-title {
+      text-align: center;
+      margin-top: 20px;
     }
 
 
@@ -348,7 +348,9 @@
         <button id="go-back-practice">
           <img src="images/Left-Arrow.svg" alt="practice-back" id="practice-back-icon">
         </button>
-        <h1>Practice</h1>
+    </div>
+    <div id="practice-title">
+      <h1>Practice Your Flashcards</h1>
     </div>
   </div>
 
