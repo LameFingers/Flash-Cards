@@ -51,7 +51,18 @@ class FlashcardApp {
     showFlashcardScreen() {
         this.hideAllScreens();
         this.flashcardScreen.style.display = "flex";
+        this.currentSetId = null; // Ensure we are not editing an old set
 
+        // --- Step 1: Clear the form completely ---
+        document.getElementById("set-title").value = "";
+        const content = document.getElementById("flashcard-content");
+        // Remove any cards that might have been left over
+        content.querySelectorAll(".card-container").forEach(card => card.remove());
+
+        // --- Step 2: Add the first, clean card ---
+        this.addFlashcard();
+
+        // --- Step 3: Safely set up all listeners for this screen ---
         this.safeAddEventListener("go-back-flashcard", "click", () => this.showMenu());
         this.safeAddEventListener("add-card", "click", () => this.addFlashcard());
         this.safeAddEventListener("save-set", "click", () => this.saveSet());
