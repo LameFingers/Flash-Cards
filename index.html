@@ -337,18 +337,11 @@
       window.db = firebase.firestore();
       window.auth = firebase.auth();
 
-      const loginBtn = document.getElementById("google-login-btn");
+     const loginBtn = document.getElementById("google-login-btn");
       if (loginBtn) {
         loginBtn.addEventListener("click", () => {
           const provider = new firebase.auth.GoogleAuthProvider();
           window.auth.signInWithPopup(provider)
-            .then(result => {
-              console.log("✅ Popup login successful:", result.user.email);
-              document.getElementById("login-form").style.display = "none";
-              document.getElementById("start-screen").style.display = "none";
-              new FlashcardApp();
-              document.getElementById("menue-screen").style.display = "block";
-            })
             .catch(error => {
               console.error("❌ Login popup error:", error);
             });
@@ -358,17 +351,20 @@
       firebase.auth().onAuthStateChanged((user) => {
         console.log("🔄 Auth state changed:", user ? user.email : "No user");
         if (user) {
-          document.getElementById("login-form").style.display = "none";
           document.getElementById("start-screen").style.display = "none";
-          try {
-            new FlashcardApp();
-            document.getElementById("menue-screen").style.display = "block";
-          } catch (err) {
-            console.error("🔥 Error initializing FlashcardApp:", err);
+          document.getElementById("menue-screen").style.display = "block"; // Show the menu
+          
+          // Create a single instance of the app
+          if (!flashcardAppInstance) {
+            try {
+              flashcardAppInstance = new FlashcardApp();
+            } catch (err) {
+              console.error("🔥 Error initializing FlashcardApp:", err);
+            }
           }
         } else {
           document.getElementById("start-screen").style.display = "flex";
-          document.getElementById("login-form").style.display = "block";
+          document.getElementById("menue-screen").style.display = "none"; // Hide the menu
         }
       });
     });

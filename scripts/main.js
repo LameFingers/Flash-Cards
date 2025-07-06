@@ -1,5 +1,5 @@
 class FlashcardApp {
-    constructor () {
+ constructor () {
         this.startBtn = document.getElementById("starting-button");
         this.startScreen = document.getElementById("start-screen");
         this.flashcardScreen = document.getElementById("flashcard-screen");
@@ -8,8 +8,10 @@ class FlashcardApp {
         this.practiceScreen = document.getElementById("practice-screen");
         this.practiceScreenBtn = document.getElementById("practice");
         this.backBtnPractice = document.getElementById("go-back-practice");
-        this.backBtn = document.getElementById("Right-Arrow-Icon");
-        this.newSet = document.getElementById("new-set-icon");
+        
+        this.backBtn = document.getElementById("go-back"); 
+        this.newSet = document.getElementById("new-set");
+
         this.backBtnFlash = document.getElementById("go-back-flashcard");
         this.addCardBtn = document.getElementById("add-card");
         this.trashBtn = document.getElementById("trash-button");
@@ -17,12 +19,11 @@ class FlashcardApp {
         this.libraryButton = document.getElementById("library-button");
         this.backBtnLib = document.getElementById("go-back-library");
         this.saveBtn = document.getElementById("save-set");
-
         this.currentSetId = null;
 
         this.autoExpandTextAreas();
         this.setupEventListener();
-        this.showMenu();
+    
     }
 
     setupEventListener() {
