@@ -18,6 +18,8 @@ class FlashcardApp {
         this.backBtnLib = document.getElementById("go-back-library");
         this.saveBtn = document.getElementById("save-set");
 
+        this.currentSetId = null;
+
         this.autoExpandTextAreas();
         this.setupEventListener();
         this.showMenu();
@@ -26,7 +28,14 @@ class FlashcardApp {
     setupEventListener() {
         this.startBtn.addEventListener("click", () => this.showMenu());
         this.backBtn.addEventListener("click", () => this.showStart());
-        this.newSet.addEventListener("click", () => this.showFlashcardScreen());
+        this.newSet.addEventListener("click", () => {
+            this.currentSetId = null;
+            document.getElementById("set-title").value = "";
+            const existingCards = document.querySelectorAll(".card-container");
+            existingCards.forEach(card => card.remove());
+            this.addFlashcard();
+            this.showFlashcardScreen();
+        });        
         this.backBtnFlash.addEventListener("click", () => this.showMenu());
         this.addCardBtn.addEventListener("click", () => this.addFlashcard());
         this.trashBtn.addEventListener("click", () => this.deleteLastFlashcard());
@@ -128,6 +137,36 @@ class FlashcardApp {
             textarea.style.height = textarea.scrollHeight + "px";
         });
     }
+    editSet(setId, setData) {
+        this.currentSetId = setId;
+        document.getElementById("set-title").value = setData.title;
+
+        const flashcardContent = document.getElementById("flashcard-content");
+        const existingCards = flashcardContent.querySelectorAll(".card-container");
+        existingCards.forEach(card => card.remove());
+
+        setData.cards.forEach(cardData => {
+            const newCard = document.createElement("div");
+            newCard.classList.add("card-container");
+            newCard.innerHTML = `
+                <input type="text" class="term" placeholder="Term" value="${cardData.term}">
+                <textarea class="definition" placeholder="Definition">${cardData.definition}</textarea>
+                <button class="delete-card"> 
+                    <img src="images/Trash.svg" alt="trash-icon" />
+                </button>
+            `;
+
+            newCard.querySelector(".delete-card").addEventListener("click", () => {
+                this.deleteFlashcard(newCard);
+            });
+
+            const buttonContainer = document.querySelector(".button-container");
+            flashcardContent.insertBefore(newCard, buttonContainer);
+        });
+
+        this.autoExpandTextAreas();
+        this.showFlashcardScreen();
+    }
 
     async saveSet() {
         const setTitle = document.getElementById("set-title").value.trim();
@@ -158,16 +197,23 @@ class FlashcardApp {
             return;
         }
 
+        const setData = {
+            title: setTitle,
+            cards: flashcards,
+            createdAt: new Date()
+        };
+
         try {
-            await window.db.collection("flashcardSets").doc(user.uid).collection("sets").add({
-                title: setTitle,
-                cards: flashcards,
-                createdAt: new Date()
-            });
+            if (this.currentSetId){
+                await window.db.collection("flashcardSets").doc(user.uid).collection("sets").doc(this.currentSetId).update(setData);
+                alert(`Flashcard set "${setTitle}" updated successfully.`);
+            }
+            else {
+                await window.db.collection("flashcardSets").doc(user.id).collection("sets").add(setData);
+                alert(`Flashcard set "${setTitle}" updated successfully.`);
+            }
 
-            alert(`Flashcard set "${setTitle}" saved online.`);
-
-            // Reset form
+            this.currentSetId = null;
             document.getElementById("set-title").value = "";
             document.querySelectorAll(".card-container").forEach(card => card.remove());
             this.addFlashcard();
@@ -199,7 +245,7 @@ class FlashcardApp {
                 <div id="library-banner" style="position: relative; padding: 20px 0; text-align: center;">
                     <h1 style="margin: 0; display: inline-block;">Your Flashcard Sets</h1>
                 </div>
-                <button id="go-back-library" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer;">
+                <button id="go-back-library" style="position: absolute; background: none, border: none, padding: 0, cursor: pointer, margin-left: 30px">
                     <img src="images/Left-Arrow.svg" alt="library-back" id="library-left-icon">
                 </button>
                 <div id="library-content"></div>
@@ -229,7 +275,7 @@ class FlashcardApp {
 
 
             cardDiv.addEventListener("click", () => {
-                alert(`Clicked set: ${data.title}`);
+                this.editSet(doc.id, doc.data());
             });
 
             const deleteBtn = cardDiv.querySelector(".delete-set-btn");
