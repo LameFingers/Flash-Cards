@@ -137,30 +137,44 @@ class FlashcardApp {
             textarea.style.height = textarea.scrollHeight + "px";
         });
     }
+
     editSet(setId, setData) {
         this.currentSetId = setId;
         document.getElementById("set-title").value = setData.title;
 
         const flashcardContent = document.getElementById("flashcard-content");
+        const buttonContainer = document.querySelector(".button-container");
+
+        // Remove only the old card containers
         const existingCards = flashcardContent.querySelectorAll(".card-container");
         existingCards.forEach(card => card.remove());
 
+        // Re-create the cards from the set data
         setData.cards.forEach(cardData => {
             const newCard = document.createElement("div");
             newCard.classList.add("card-container");
-            newCard.innerHTML = `
-                <input type="text" class="term" placeholder="Term" value="${cardData.term}">
-                <textarea class="definition" placeholder="Definition">${cardData.definition}</textarea>
-                <button class="delete-card"> 
-                    <img src="images/Trash.svg" alt="trash-icon" />
-                </button>
-            `;
 
-            newCard.querySelector(".delete-card").addEventListener("click", () => {
-                this.deleteFlashcard(newCard);
-            });
+            const termInput = document.createElement("input");
+            termInput.type = "text";
+            termInput.className = "term";
+            termInput.placeholder = "Term";
+            termInput.value = cardData.term; // Safely sets the term
 
-            const buttonContainer = document.querySelector(".button-container");
+            const definitionTextarea = document.createElement("textarea");
+            definitionTextarea.className = "definition";
+            definitionTextarea.placeholder = "Definition";
+            definitionTextarea.textContent = cardData.definition; // Safely sets the definition
+
+            const deleteButton = document.createElement("button");
+            deleteButton.className = "delete-card";
+            deleteButton.innerHTML = `<img src="images/Trash.svg" alt="trash-icon" />`;
+            deleteButton.addEventListener("click", () => this.deleteFlashcard(newCard));
+
+            newCard.appendChild(termInput);
+            newCard.appendChild(definitionTextarea);
+            newCard.appendChild(deleteButton);
+
+            // Insert the new card before the 'Add Card' and 'Save Set' buttons
             flashcardContent.insertBefore(newCard, buttonContainer);
         });
 
@@ -197,22 +211,29 @@ class FlashcardApp {
             return;
         }
 
-        const setData = {
-            title: setTitle,
-            cards: flashcards,
-            createdAt: new Date()
-        };
-
         try {
-            if (this.currentSetId){
+            if (this.currentSetId) {
+                // Data for updating an existing set
+                const setData = {
+                    title: setTitle,
+                    cards: flashcards,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp() // Add update timestamp
+                };
                 await window.db.collection("flashcardSets").doc(user.uid).collection("sets").doc(this.currentSetId).update(setData);
                 alert(`Flashcard set "${setTitle}" updated successfully.`);
-            }
-            else {
-                await window.db.collection("flashcardSets").doc(user.id).collection("sets").add(setData);
-                alert(`Flashcard set "${setTitle}" updated successfully.`);
+
+            } else {
+                // Data for creating a new set
+                const setData = {
+                    title: setTitle,
+                    cards: flashcards,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp() // Use server timestamp
+                };
+                await window.db.collection("flashcardSets").doc(user.uid).collection("sets").add(setData);
+                alert(`Flashcard set "${setTitle}" saved online.`);
             }
 
+            // Reset form
             this.currentSetId = null;
             document.getElementById("set-title").value = "";
             document.querySelectorAll(".card-container").forEach(card => card.remove());
