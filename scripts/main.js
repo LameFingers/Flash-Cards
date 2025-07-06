@@ -9,7 +9,7 @@ class FlashcardApp {
         this.practiceScreenBtn = document.getElementById("practice");
         this.backBtnPractice = document.getElementById("go-back-practice");
         
-        this.backBtn = document.getElementById("go-back"); 
+        this.backBtn = document.getElementById("go-back");
         this.newSet = document.getElementById("new-set");
 
         this.backBtnFlash = document.getElementById("go-back-flashcard");
