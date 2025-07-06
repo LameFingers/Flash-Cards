@@ -201,34 +201,77 @@
       box-sizing: border-box;
     }
 
+    /* --- Library Screen Styles --- */
+
+    /* Main container for the library screen */
     #library-screen {
       display: flex;
-      flex-direction: column;
+      flex-direction: column; /* Stacks the banner and content vertically */
       height: 100vh;
     }
 
-    .library-card {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border: 1px solid #000;
-      padding: 10px;
-      width: 100%;
-      max-width: 500px;
-      box-sizing: border-box;
+    /* The banner at the top */
+    #library-banner {
+        display: flex;
+        align-items: center; /* Vertically centers the title and back button */
+        padding: 1rem;
+        flex-shrink: 0; /* Prevents the banner from shrinking */
     }
 
+    #library-banner h1 {
+        flex-grow: 1; /* Allows the title to take up extra space */
+        text-align: center;
+        margin: 0;
+    }
+
+    /* The area that holds the list of cards */
+    #library-content {
+      flex-grow: 1; /* Allows this area to fill the remaining space */
+      overflow-y: auto; /* Adds a scrollbar if the content overflows */
+      display: flex;
+      flex-direction: column; /* Stacks the cards vertically */
+      align-items: center;   /* Horizontally centers the cards */
+      padding: 20px;
+      gap: 15px; /* Creates consistent spacing between cards */
+    }
+
+    /* Individual flashcard sets in the list */
+    .library-card {
+      display: flex;
+      justify-content: space-between; /* Pushes title and trash icon to opposite ends */
+      align-items: center; /* Vertically aligns the content and trash icon */
+      background-color: #fff;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 15px 20px;
+      width: 100%;
+      max-width: 600px;
+      box-sizing: border-box;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    /* The clickable area with the title and card count */
     .library-card-content {
       flex-grow: 1;
       cursor: pointer;
+      overflow: hidden; /* Prevents long titles from breaking the layout */
+      text-overflow: ellipsis;
     }
 
+    .library-card-content p {
+        margin: 4px 0 0;
+        color: #666;
+        font-size: 0.9em;
+    }
+
+    /* The delete button */
     .delete-set-btn {
       background: none;
       border: none;
       cursor: pointer;
       padding: 5px;
-    }
+      margin-left: 15px; /* Adds some space between the text and the button */
+}
 
     #practice-banner button {
       background: none;
