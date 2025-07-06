@@ -74,14 +74,14 @@ class FlashcardApp {
     async showLibraryScreen() {
         this.hideAllScreens();
         this.libraryScreen.style.display = "flex";
-        
+
         const user = window.auth.currentUser;
         if (!user) {
             alert("You must be logged in to view your flashcards.");
             return;
         }
 
-        // Clear previous content and build the screen structure
+        // Build the screen's static structure
         this.libraryScreen.innerHTML = `
             <div id="library-banner">
                 <button id="go-back-library">
@@ -92,20 +92,54 @@ class FlashcardApp {
             <div id="library-content"></div>
         `;
         
+        // Re-attach the back button listener
         this.safeAddEventListener("go-back-library", "click", () => this.showMenu());
         
         const contentDiv = document.getElementById("library-content");
         try {
             const snapshot = await window.db.collection("flashcardSets").doc(user.uid).collection("sets").orderBy("createdAt", "desc").get();
+            
+            if (snapshot.empty) {
+                contentDiv.innerHTML = "<p>You don't have any flashcard sets yet.</p>";
+                return;
+            }
+
             snapshot.forEach(doc => {
                 const data = doc.data();
                 const cardDiv = document.createElement("div");
                 cardDiv.className = "library-card";
+                
                 cardDiv.innerHTML = `
-                    <strong>${data.title}</strong>
-                    <p>${data.cards ? data.cards.length : 0} card(s)</p>
+                    <div class="library-card-content">
+                        <strong>${data.title}</strong>
+                        <p>${data.cards ? data.cards.length : 0} card(s)</p>
+                    </div>
+                    <button class="delete-set-btn" title="Delete Set">
+                        <img src="images/Trash.svg" alt="Delete">
+                    </button>
                 `;
-                cardDiv.addEventListener("click", () => this.editSet(doc.id, data));
+
+                // Make the main card area clickable for editing
+                const cardContent = cardDiv.querySelector(".library-card-content");
+                cardContent.addEventListener("click", () => this.editSet(doc.id, data));
+
+                // Add the delete functionality to the button
+                const deleteBtn = cardDiv.querySelector(".delete-set-btn");
+                deleteBtn.addEventListener("click", async (e) => {
+                    e.stopPropagation(); // Prevents the edit function from running
+                    
+                    if (confirm(`Are you sure you want to delete the set "${data.title}"?`)) {
+                        try {
+                            await window.db.collection("flashcardSets").doc(user.uid).collection("sets").doc(doc.id).delete();
+                            cardDiv.remove(); // Remove the set from the screen
+                            alert(`"${data.title}" has been deleted.`);
+                        } catch (error) {
+                            console.error("Error deleting set:", error);
+                            alert("Failed to delete the set.");
+                        }
+                    }
+                });
+                
                 contentDiv.appendChild(cardDiv);
             });
         } catch (err) {
