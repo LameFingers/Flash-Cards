@@ -1,42 +1,32 @@
 class FlashcardApp {
  constructor () {
-        this.startBtn = document.getElementById("starting-button");
-        this.startScreen = document.getElementById("start-screen");
-        this.flashcardScreen = document.getElementById("flashcard-screen");
-        this.libraryScreen = document.getElementById("library-screen");
-        this.menueScreen = document.getElementById("menue-screen");
-        this.practiceScreen = document.getElementById("practice-screen");
-        this.practiceScreenBtn = document.getElementById("practice");
-        this.backBtnPractice = document.getElementById("go-back-practice");
-        
-        this.backBtn = document.getElementById("go-back");
-        this.newSet = document.getElementById("new-set");
+    this.startBtn = document.getElementById("starting-button");
+    this.startScreen = document.getElementById("start-screen");
+    this.flashcardScreen = document.getElementById("flashcard-screen");
+    this.libraryScreen = document.getElementById("library-screen");
+    this.menueScreen = document.getElementById("menue-screen");
+    this.practiceScreen = document.getElementById("practice-screen");
+    this.practiceScreenBtn = document.getElementById("practice");
+    this.backBtnPractice = document.getElementById("go-back-practice");
+    this.backBtn = document.getElementById("go-back");
+    this.newSet = document.getElementById("new-set");
+    this.backBtnFlash = document.getElementById("go-back-flashcard");
+    this.addCardBtn = document.getElementById("add-card");
+    this.trashBtn = document.getElementById("trash-button");
+    this.flashcardContent = document.getElementById("flashcard-content");
+    this.libraryButton = document.getElementById("library-button");
+    this.saveBtn = document.getElementById("save-set");
+    this.currentSetId = null;
 
-        this.backBtnFlash = document.getElementById("go-back-flashcard");
-        this.addCardBtn = document.getElementById("add-card");
-        this.trashBtn = document.getElementById("trash-button");
-        this.flashcardContent = document.getElementById("flashcard-content");
-        this.libraryButton = document.getElementById("library-button");
-        this.backBtnLib = document.getElementById("go-back-library");
-        this.saveBtn = document.getElementById("save-set");
-        this.currentSetId = null;
-
-        this.autoExpandTextAreas();
-        this.setupEventListener();
+    this.autoExpandTextAreas();
+    this.setupEventListener();
     
     }
 
     setupEventListener() {
         this.startBtn.addEventListener("click", () => this.showMenu());
         this.backBtn.addEventListener("click", () => this.showStart());
-        this.newSet.addEventListener("click", () => {
-            this.currentSetId = null;
-            document.getElementById("set-title").value = "";
-            const existingCards = document.querySelectorAll(".card-container");
-            existingCards.forEach(card => card.remove());
-            this.addFlashcard();
-            this.showFlashcardScreen();
-        });        
+        this.newSet.addEventListener("click", () => this.showFlashcardScreen());
         this.backBtnFlash.addEventListener("click", () => this.showMenu());
         this.addCardBtn.addEventListener("click", () => this.addFlashcard());
         this.trashBtn.addEventListener("click", () => this.deleteLastFlashcard());
