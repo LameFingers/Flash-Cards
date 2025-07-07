@@ -268,24 +268,103 @@
       margin-left: 15px; /* Adds some space between the text and the button */
 }
 
+    /* --- Practice Screen Styles --- */
+    #practice-set-selection, #practice-card-view {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      height: 100%;
+    }
+
+    #practice-set-list {
+      flex-grow: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      gap: 15px;
+    }
+
+    .practice-set-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #fff;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 15px 20px;
+      width: 100%;
+      max-width: 600px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    
+    .practice-set-item:hover {
+      background-color: #f0f0f0;
+    }
+
+    /* Card view styles */
     .practice-header {
       display: flex;
-      align-items: center; /* Vertically centers the items */
-      padding: 1rem;
-      flex-shrink: 0;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      border-bottom: 1px solid #ddd;
     }
-
-    #practice-progress {
-        flex-grow: 1; /* Pushes the progress text to the center */
-        text-align: center;
-        font-size: 1.1em;
-        color: #333;
+    
+    #practice-card-container {
+      flex-grow: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
     }
-
-    #practice-back-to-selection {
-        background: none;
-        border: none;
-        cursor: pointer;
+    
+    #practice-card {
+      width: 100%;
+      max-width: 500px;
+      height: 300px;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.6s;
+      cursor: pointer;
+    }
+    
+    #practice-card.is-flipped {
+      transform: rotateY(180deg);
+    }
+    
+    .card-face {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.5em;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    
+    .card-front {
+      background-color: #fff;
+      border: 1px solid #ddd;
+    }
+    
+    .card-back {
+      background-color: #f5f5f5;
+      border: 1px solid #ddd;
+      transform: rotateY(180deg);
+    }
+    
+    .practice-controls {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      padding: 20px;
     }
 
 
@@ -369,11 +448,23 @@
         </div>
     </div>
 
-  <div class="practice-header">
-    <button id="practice-back-to-selection" title="Back to Set List">
-        <img src="images/Left-Arrow.svg" alt="Back">
-    </button>
-    <div id="practice-progress"></div>
+    <div id="practice-card-view" style="display: none;">
+      <div class="practice-header">
+        <button id="practice-back-to-menu">Menu</button>
+        <div id="practice-progress"></div>
+        <button id="practice-exit-session">End Session</button>
+      </div>
+      <div id="practice-card-container">
+        <div id="practice-card">
+          <div class="card-face card-front"></div>
+          <div class="card-face card-back"></div>
+        </div>
+      </div>
+      <div class="practice-controls">
+        <button id="practice-prev-card">Previous</button>
+        <button id="practice-flip-card">Flip</button>
+        <button id="practice-next-card">Next</button>
+      </div>
     </div>
   </div>
 

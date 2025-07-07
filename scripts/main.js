@@ -153,19 +153,16 @@ class FlashcardApp {
         this.practiceScreen.style.display = "flex";
 
         // Show the set selection list and hide the card viewer
-        const setSelection = document.getElementById("practice-set-selection");
-        const cardView = document.getElementById("practice-card-view");
-        if (setSelection) setSelection.style.display = "flex";
-        if (cardView) cardView.style.display = "none";
+        document.getElementById("practice-set-selection").style.display = "flex";
+        document.getElementById("practice-card-view").style.display = "none";
         
-        // Re-attach the main back button listener for the practice screen
+        // Re-attach the main back button listener
         this.safeAddEventListener("go-back-practice", "click", () => this.showMenu());
 
         const user = window.auth.currentUser;
         if (!user) return;
 
         const setListDiv = document.getElementById("practice-set-list");
-        if (!setListDiv) return; // Exit if the list container doesn't exist
         setListDiv.innerHTML = ""; // Clear old list
 
         try {
@@ -200,49 +197,6 @@ class FlashcardApp {
             console.error("Error loading sets for practice:", err);
             alert("Failed to load your sets.");
         }
-    }
-
-    startPracticeSession(cards) {
-        // Hide the set selection and show the card viewer
-        document.getElementById("practice-set-selection").style.display = "none";
-        document.getElementById("practice-card-view").style.display = "flex";
-
-        let currentIndex = 0;
-        const cardElement = document.getElementById("practice-card");
-        const frontFace = cardElement.querySelector(".card-front");
-        const backFace = cardElement.querySelector(".card-back");
-        const progressIndicator = document.getElementById("practice-progress");
-
-        const updateCard = () => {
-            cardElement.classList.remove("is-flipped");
-            frontFace.textContent = cards[currentIndex].term;
-            backFace.textContent = cards[currentIndex].definition;
-            progressIndicator.textContent = `Card ${currentIndex + 1} of ${cards.length}`;
-        };
-
-        // --- The fix is here: Set up listeners for the practice session ---
-        this.safeAddEventListener("practice-flip-card", "click", () => cardElement.classList.toggle("is-flipped"));
-        cardElement.addEventListener("click", () => cardElement.classList.toggle("is-flipped"));
-
-        this.safeAddEventListener("practice-next-card", "click", () => {
-            if (currentIndex < cards.length - 1) {
-                currentIndex++;
-                updateCard();
-            }
-        });
-        this.safeAddEventListener("practice-prev-card", "click", () => {
-            if (currentIndex > 0) {
-                currentIndex--;
-                updateCard();
-            }
-        });
-        
-        // Listener to exit the session using the new back arrow
-        this.safeAddEventListener("practice-back-to-selection", "click", () => {
-            this.showPracticeScreen(); // Go back to the set selection list
-        });
-
-        updateCard(); // Load the first card
     }
 
     // --- Utility Methods ---
