@@ -270,13 +270,22 @@
 
     /* --- Practice Screen Styles --- */
 
+    /* The main container for the entire practice screen */
+    #practice-screen {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+    }
+
+    /* The two main views (set selection and card view) */
     #practice-set-selection, #practice-card-view {
       display: flex;
       flex-direction: column;
       width: 100%;
-      height: 100vh;
+      height: 100%; /* Change from 100vh to 100% */
     }
 
+    /* Styles the list of sets a user can choose from */
     #practice-set-list {
       flex-grow: 1;
       overflow-y: auto;
@@ -304,8 +313,7 @@
       background-color: #f0f0f0;
     }
 
-    /* --- Card View Formatting (The Core Fix) --- */
-
+    /* The header at the top of the practice view */
     .practice-header {
       display: flex;
       align-items: center;
@@ -318,7 +326,6 @@
         flex-grow: 1;
         text-align: center;
         font-size: 1.1em;
-        color: #333;
     }
 
     #practice-back-to-selection {
@@ -382,7 +389,6 @@
       padding: 20px;
       flex-shrink: 0;
     }
-
 
   </style>
 </head>

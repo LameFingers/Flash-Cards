@@ -301,40 +301,45 @@ class FlashcardApp {
         document.getElementById("practice-set-selection").style.display = "none";
         document.getElementById("practice-card-view").style.display = "flex";
 
-        let currentIndex = 0;
         const cardElement = document.getElementById("practice-card");
-        const frontFace = cardElement.querySelector(".card-front");
-        const backFace = cardElement.querySelector(".card-back");
+        const frontFace = document.querySelector("#practice-card .card-front");
+        const backFace = document.querySelector("#practice-card .card-back");
         const progressIndicator = document.getElementById("practice-progress");
 
+        if (!cardElement || !frontFace || !backFace || !progressIndicator) {
+            console.error("Practice screen elements could not be found. Aborting session.");
+            alert("Could not start the practice session due to a layout error.");
+            this.showMenu(); // Go back to a safe screen
+            return;
+        }
+
+        let currentIndex = 0;
         const updateCard = () => {
-            cardElement.classList.remove("is-flipped"); // Always show front first
+            cardElement.classList.remove("is-flipped");
             frontFace.textContent = cards[currentIndex].term;
             backFace.textContent = cards[currentIndex].definition;
             progressIndicator.textContent = `Card ${currentIndex + 1} of ${cards.length}`;
         };
 
-        // Button listeners for the practice session
-        document.getElementById("practice-flip-card").onclick = () => cardElement.classList.toggle("is-flipped");
-        cardElement.onclick = () => cardElement.classList.toggle("is-flipped");
-
-        document.getElementById("practice-next-card").onclick = () => {
+        // Use a single, reliable listener for flipping the card
+        const flipCard = () => cardElement.classList.toggle("is-flipped");
+        cardElement.onclick = flipCard; // Make the whole card clickable
+        
+        // Wire up the rest of the controls
+        this.safeAddEventListener("practice-flip-card", "click", flipCard);
+        this.safeAddEventListener("practice-next-card", "click", () => {
             if (currentIndex < cards.length - 1) {
                 currentIndex++;
                 updateCard();
             }
-        };
-        document.getElementById("practice-prev-card").onclick = () => {
+        });
+        this.safeAddEventListener("practice-prev-card", "click", () => {
             if (currentIndex > 0) {
                 currentIndex--;
                 updateCard();
             }
-        };
-        
-        // Listener to exit the session
-        document.getElementById("practice-exit-session").onclick = () => {
-            this.showPracticeScreen(); // Go back to the set selection list
-        };
+        });
+        this.safeAddEventListener("practice-back-to-selection", "click", () => this.showPracticeScreen());
 
         updateCard(); // Load the first card
     }
