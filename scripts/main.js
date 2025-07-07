@@ -13,9 +13,7 @@ class FlashcardApp {
         this.setupMenuEventListeners();
     }
 
-    /**
-     * A helper function to safely add event listeners without crashing the app.
-     */
+
     safeAddEventListener(id, event, handler) {
         const element = document.getElementById(id);
         if (element) {
@@ -54,6 +52,7 @@ class FlashcardApp {
     }
 
 
+
     showFlashcardScreen() {
         this.hideAllScreens();
         this.flashcardScreen.style.display = "flex";
@@ -61,11 +60,8 @@ class FlashcardApp {
 
         document.getElementById("set-title").value = "";
         document.querySelectorAll(".card-container").forEach(card => card.remove());
-
-        // Add the first blank card for the new set
         this.addFlashcard();
 
-        // Safely set up listeners for the screen's buttons
         this.safeAddEventListener("go-back-flashcard", "click", () => this.showMenu());
         this.safeAddEventListener("add-card", "click", () => this.addFlashcard());
         this.safeAddEventListener("save-set", "click", () => this.saveSet());
@@ -152,11 +148,8 @@ class FlashcardApp {
         this.hideAllScreens();
         this.practiceScreen.style.display = "flex";
 
-        // Show the set selection list and hide the card viewer
-        const setSelection = document.getElementById("practice-set-selection");
-        const cardView = document.getElementById("practice-card-view");
-        if (setSelection) setSelection.style.display = "flex";
-        if (cardView) cardView.style.display = "none";
+        document.getElementById("practice-set-selection").style.display = "flex";
+        document.getElementById("practice-card-view").style.display = "none";
         
         this.safeAddEventListener("go-back-practice", "click", () => this.showMenu());
 
@@ -165,25 +158,20 @@ class FlashcardApp {
 
         const setListDiv = document.getElementById("practice-set-list");
         if (!setListDiv) return;
-        setListDiv.innerHTML = ""; // Clear old list
+        setListDiv.innerHTML = "<p>Loading sets...</p>";
 
         try {
             const snapshot = await window.db.collection("flashcardSets").doc(user.uid).collection("sets").orderBy("createdAt", "desc").get();
+            setListDiv.innerHTML = ""; // Clear loading message
             if (snapshot.empty) {
                 setListDiv.innerHTML = "<p>You have no sets to practice.</p>";
                 return;
             }
-
             snapshot.forEach(doc => {
                 const data = doc.data();
                 const setItem = document.createElement("div");
                 setItem.className = "practice-set-item";
-                setItem.innerHTML = `
-                    <div>
-                        <strong>${data.title}</strong>
-                        <p>${data.cards ? data.cards.length : 0} card(s)</p>
-                    </div>
-                `;
+                setItem.innerHTML = `<div><strong>${data.title}</strong><p>${data.cards ? data.cards.length : 0} card(s)</p></div>`;
                 setItem.addEventListener("click", () => {
                     if (data.cards && data.cards.length > 0) {
                         this.startPracticeSession(data.cards);
@@ -195,10 +183,10 @@ class FlashcardApp {
             });
         } catch (err) {
             console.error("Error loading sets for practice:", err);
-            alert("Failed to load your sets.");
+            setListDiv.innerHTML = "<p>Could not load your sets.</p>";
         }
     }
-
+    
     startPracticeSession(cards) {
         document.getElementById("practice-set-selection").style.display = "none";
         document.getElementById("practice-card-view").style.display = "flex";
@@ -209,6 +197,11 @@ class FlashcardApp {
         const backFace = cardElement.querySelector(".card-back");
         const progressIndicator = document.getElementById("practice-progress");
 
+        if (!cardElement || !frontFace || !backFace || !progressIndicator) {
+            console.error("Practice view elements are missing!");
+            return;
+        }
+
         const updateCard = () => {
             cardElement.classList.remove("is-flipped");
             frontFace.textContent = cards[currentIndex].term;
@@ -216,10 +209,10 @@ class FlashcardApp {
             progressIndicator.textContent = `Card ${currentIndex + 1} of ${cards.length}`;
         };
 
-        cardElement.addEventListener("click", () => cardElement.classList.toggle("is-flipped"));
+        const flipCard = () => cardElement.classList.toggle("is-flipped");
+        cardElement.onclick = flipCard;
 
-        // Set up the rest of the controls
-        this.safeAddEventListener("practice-flip-card", "click", () => cardElement.classList.toggle("is-flipped"));
+        this.safeAddEventListener("practice-flip-card", "click", flipCard);
         this.safeAddEventListener("practice-next-card", "click", () => {
             if (currentIndex < cards.length - 1) {
                 currentIndex++;
@@ -234,7 +227,7 @@ class FlashcardApp {
         });
         this.safeAddEventListener("practice-back-to-selection", "click", () => this.showPracticeScreen());
 
-        updateCard(); // Load the first card
+        updateCard();
     }
 
     // --- Utility Methods ---
