@@ -158,14 +158,13 @@ class FlashcardApp {
         if (setSelection) setSelection.style.display = "flex";
         if (cardView) cardView.style.display = "none";
         
-        // Re-attach the main back button listener for the practice screen
         this.safeAddEventListener("go-back-practice", "click", () => this.showMenu());
 
         const user = window.auth.currentUser;
         if (!user) return;
 
         const setListDiv = document.getElementById("practice-set-list");
-        if (!setListDiv) return; // Exit if the list container doesn't exist
+        if (!setListDiv) return;
         setListDiv.innerHTML = ""; // Clear old list
 
         try {
@@ -184,9 +183,7 @@ class FlashcardApp {
                         <strong>${data.title}</strong>
                         <p>${data.cards ? data.cards.length : 0} card(s)</p>
                     </div>
-                    <span>▶</span>
                 `;
-                // Add click listener to start the practice session for this set
                 setItem.addEventListener("click", () => {
                     if (data.cards && data.cards.length > 0) {
                         this.startPracticeSession(data.cards);
@@ -203,7 +200,6 @@ class FlashcardApp {
     }
 
     startPracticeSession(cards) {
-        // Hide the set selection and show the card viewer
         document.getElementById("practice-set-selection").style.display = "none";
         document.getElementById("practice-card-view").style.display = "flex";
 
@@ -220,10 +216,10 @@ class FlashcardApp {
             progressIndicator.textContent = `Card ${currentIndex + 1} of ${cards.length}`;
         };
 
-        // --- The fix is here: Set up listeners for the practice session ---
-        this.safeAddEventListener("practice-flip-card", "click", () => cardElement.classList.toggle("is-flipped"));
+        // **THE FIX IS HERE**: This line adds the click-to-flip functionality
         cardElement.addEventListener("click", () => cardElement.classList.toggle("is-flipped"));
 
+        this.safeAddEventListener("practice-flip-card", "click", () => cardElement.classList.toggle("is-flipped"));
         this.safeAddEventListener("practice-next-card", "click", () => {
             if (currentIndex < cards.length - 1) {
                 currentIndex++;
@@ -236,11 +232,7 @@ class FlashcardApp {
                 updateCard();
             }
         });
-        
-        // Listener to exit the session using the new back arrow
-        this.safeAddEventListener("practice-back-to-selection", "click", () => {
-            this.showPracticeScreen(); // Go back to the set selection list
-        });
+        this.safeAddEventListener("practice-back-to-selection", "click", () => this.showPracticeScreen());
 
         updateCard(); // Load the first card
     }
