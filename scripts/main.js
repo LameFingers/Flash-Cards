@@ -186,7 +186,7 @@ class FlashcardApp {
                 // Add click listener to start the practice session for this set
                 setItem.addEventListener("click", () => {
                     if (data.cards && data.cards.length > 0) {
-                        this.startPracticeSession(data.cards);
+                        this.startPracticeSession(data.cards, data.title);
                     } else {
                         alert("This set has no cards to practice.");
                     }
@@ -258,7 +258,7 @@ class FlashcardApp {
         });
     }
 
-    startPracticeSession(cards) {
+    startPracticeSession(cards, setTitle) {
         // Hide the set selection and show the card viewer
         document.getElementById("practice-set-selection").style.display = "none";
         document.getElementById("practice-card-view").style.display = "flex";
@@ -268,6 +268,9 @@ class FlashcardApp {
         const frontFace = cardElement.querySelector(".card-front");
         const backFace = cardElement.querySelector(".card-back");
         const progressIndicator = document.getElementById("practice-progress");
+        const practiceSetTitle = document.getElementById("practice-set-title");
+
+        practiceSetTitle.textContent = setTitle;
 
         const updateCard = () => {
             cardElement.classList.remove("is-flipped"); // Always show front first
