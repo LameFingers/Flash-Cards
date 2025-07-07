@@ -206,37 +206,40 @@
     /* Main container for the library screen */
     #library-screen {
       display: flex;
-      flex-direction: column;
+      flex-direction: column; /* Stacks the banner and content vertically */
       height: 100vh;
     }
 
+    /* The banner at the top */
     #library-banner {
         display: flex;
-        align-items: center;
+        align-items: center; /* Vertically centers the title and back button */
         padding: 1rem;
-        flex-shrink: 0;
+        flex-shrink: 0; /* Prevents the banner from shrinking */
     }
 
     #library-banner h1 {
-        flex-grow: 1;
+        flex-grow: 1; /* Allows the title to take up extra space */
         text-align: center;
         margin: 0;
     }
 
+    /* The area that holds the list of cards */
     #library-content {
-      flex-grow: 1;
-      overflow-y: auto;
+      flex-grow: 1; /* Allows this area to fill the remaining space */
+      overflow-y: auto; /* Adds a scrollbar if the content overflows */
       display: flex;
-      flex-direction: column;
-      align-items: center;
+      flex-direction: column; /* Stacks the cards vertically */
+      align-items: center;   /* Horizontally centers the cards */
       padding: 20px;
-      gap: 15px;
+      gap: 15px; /* Creates consistent spacing between cards */
     }
 
+    /* Individual flashcard sets in the list */
     .library-card {
       display: flex;
-      justify-content: space-between; 
-      align-items: center; 
+      justify-content: space-between; /* Pushes title and trash icon to opposite ends */
+      align-items: center; /* Vertically aligns the content and trash icon */
       background-color: #fff;
       border: 1px solid #ddd;
       border-radius: 8px;
@@ -247,10 +250,11 @@
       box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
 
+    /* The clickable area with the title and card count */
     .library-card-content {
       flex-grow: 1;
       cursor: pointer;
-      overflow: hidden;
+      overflow: hidden; /* Prevents long titles from breaking the layout */
       text-overflow: ellipsis;
     }
 
@@ -260,6 +264,7 @@
         font-size: 0.9em;
     }
 
+    /* The delete button */
     .delete-set-btn {
       background: none;
       border: none;
@@ -268,127 +273,13 @@
       margin-left: 15px; /* Adds some space between the text and the button */
 }
 
-  /* --- Practice Screen Styles --- */
-
-  /* The main container for the entire practice screen */
-  #practice-screen {
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-  }
-
-  /* The two main views (set selection and card view) */
-  #practice-set-selection, #practice-card-view {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    height: 100%; /* Change from 100vh to 100% */
-  }
-
-  /* Styles the list of sets a user can choose from */
-  #practice-set-list {
-    flex-grow: 1;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 20px;
-    gap: 15px;
-  }
-
-  .practice-set-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #fff;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 15px 20px;
-    width: 100%;
-    max-width: 600px;
-    cursor: pointer;
-    transition: background-color 0.2s;
-  }
-  .practice-set-item:hover {
-    background-color: #f0f0f0;
-  }
-
-  /* The header at the top of the practice view */
-  .practice-header {
-    display: flex;
-    align-items: center;
-    padding: 1rem;
-    flex-shrink: 0;
-    border-bottom: 1px solid #ddd;
-  }
-
-  #practice-progress {
-      flex-grow: 1;
-      text-align: center;
-      font-size: 1.1em;
-  }
-
-  #practice-back-to-selection {
+    #practice-banner button {
       background: none;
       border: none;
+      padding: 0;
       cursor: pointer;
-  }
+    }
 
-  /* The main container that holds the flipping card */
-  #practice-card-container {
-    flex-grow: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-    perspective: 1000px;
-  }
-
-  /* The card itself, which handles the flip animation */
-  #practice-card {
-    width: 100%;
-    max-width: 500px;
-    height: 300px;
-    position: relative;
-    transform-style: preserve-3d;
-    transition: transform 0.6s;
-    cursor: pointer;
-  }
-  #practice-card.is-flipped {
-    transform: rotateY(180deg);
-  }
-
-  /* The front and back faces of the card */
-  .card-face {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    backface-visibility: hidden;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 1.5em;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    overflow-wrap: break-word;
-  }
-  .card-front {
-    background-color: #fff;
-  }
-  .card-back {
-    background-color: #f5f5f5;
-    transform: rotateY(180deg);
-  }
-
-  /* The container for the Previous/Flip/Next buttons */
-  .practice-controls {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    padding: 20px;
-    flex-shrink: 0;
-  }
 
   </style>
 </head>
@@ -452,6 +343,14 @@
     </div>
   </div>
 
+  <div id="practice-screen" style="display: none;">
+    <div id="practice-banner">
+        <button id="go-back-practice">
+          <img src="images/Left-Arrow.svg" alt="practice-back" id="practice-back-icon">
+        </button>
+        <h1>Practice</h1>
+    </div>
+  </div>
 
   <!-- Library Screen -->
   <div id="library-screen" style="display: none;">
@@ -459,22 +358,10 @@
 
   <!-- Practice Screen -->
   <div id="practice-screen" style="display: none;">
-    <div id="practice-set-selection">
-      <div id="practice-banner">
-          <button id="go-back-practice">
-            <img src="images/Left-Arrow.svg" alt="practice-back">
-          </button>
-          <h1>Choose a Set to Practice</h1>
-      </div>
-      <div id="practice-set-list">
-        </div>
-    </div>
-
-  <div class="practice-header">
-    <button id="practice-back-to-selection" title="Back to Set List">
-        <img src="images/Left-Arrow.svg" alt="Back">
-    </button>
-    <div id="practice-progress"></div>
+    <div id="practice-banner">
+        <button id="go-back-practice">
+          <img src="images/Left-Arrow.svg" alt="practice-back" id="practice-back-icon">
+        </button>
     </div>
   </div>
 

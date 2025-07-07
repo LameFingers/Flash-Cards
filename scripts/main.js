@@ -13,7 +13,9 @@ class FlashcardApp {
         this.setupMenuEventListeners();
     }
 
-
+    /**
+     * A helper function to safely add event listeners without crashing the app.
+     */
     safeAddEventListener(id, event, handler) {
         const element = document.getElementById(id);
         if (element) {
@@ -52,7 +54,6 @@ class FlashcardApp {
     }
 
 
-
     showFlashcardScreen() {
         this.hideAllScreens();
         this.flashcardScreen.style.display = "flex";
@@ -60,8 +61,11 @@ class FlashcardApp {
 
         document.getElementById("set-title").value = "";
         document.querySelectorAll(".card-container").forEach(card => card.remove());
+
+        // Add the first blank card for the new set
         this.addFlashcard();
 
+        // Safely set up listeners for the screen's buttons
         this.safeAddEventListener("go-back-flashcard", "click", () => this.showMenu());
         this.safeAddEventListener("add-card", "click", () => this.addFlashcard());
         this.safeAddEventListener("save-set", "click", () => this.saveSet());
@@ -144,106 +148,12 @@ class FlashcardApp {
         }
     }
 
-    async showPracticeScreen() {
+    showPracticeScreen() {
         this.hideAllScreens();
         this.practiceScreen.style.display = "flex";
-
-        document.getElementById("practice-set-selection").style.display = "flex";
-        document.getElementById("practice-card-view").style.display = "none";
-        
         this.safeAddEventListener("go-back-practice", "click", () => this.showMenu());
-
-        const user = window.auth.currentUser;
-        if (!user) return;
-
-        const setListDiv = document.getElementById("practice-set-list");
-        if (!setListDiv) return;
-        setListDiv.innerHTML = "<p>Loading sets...</p>";
-
-        try {
-            const snapshot = await window.db.collection("flashcardSets").doc(user.uid).collection("sets").orderBy("createdAt", "desc").get();
-            setListDiv.innerHTML = ""; // Clear loading message
-            if (snapshot.empty) {
-                setListDiv.innerHTML = "<p>You have no sets to practice.</p>";
-                return;
-            }
-            snapshot.forEach(doc => {
-                const data = doc.data();
-                const setItem = document.createElement("div");
-                setItem.className = "practice-set-item";
-                setItem.innerHTML = `<div><strong>${data.title}</strong><p>${data.cards ? data.cards.length : 0} card(s)</p></div>`;
-                setItem.addEventListener("click", () => {
-                    if (data.cards && data.cards.length > 0) {
-                        this.startPracticeSession(data.cards);
-                    } else {
-                        alert("This set has no cards to practice.");
-                    }
-                });
-                setListDiv.appendChild(setItem);
-            });
-        } catch (err) {
-            console.error("Error loading sets for practice:", err);
-            setListDiv.innerHTML = "<p>Could not load your sets.</p>";
-        }
     }
-    
-    startPracticeSession(cards) {
-        // Step 1: Hide the set selection list and show the card practice view
-        document.getElementById("practice-set-selection").style.display = "none";
-        document.getElementById("practice-card-view").style.display = "flex";
 
-        // Step 2: Find all the necessary elements for the practice view
-        const cardElement = document.getElementById("practice-card");
-        const frontFace = cardElement ? cardElement.querySelector(".card-front") : null;
-        const backFace = cardElement ? cardElement.querySelector(".card-back") : null;
-        const progressIndicator = document.getElementById("practice-progress");
-        const backButton = document.getElementById("practice-back-to-selection");
-
-        // Step 3: Verify all elements were found before proceeding
-        if (!cardElement || !frontFace || !backFace || !progressIndicator || !backButton) {
-            console.error("Practice screen elements are missing from the DOM. Aborting.");
-            alert("Error: Could not load the practice screen.");
-            this.showMenu(); // Go back to a safe screen
-            return;
-        }
-
-        // Step 4: If all elements exist, set up the practice session
-        let currentIndex = 0;
-
-        const updateCard = () => {
-            cardElement.classList.remove("is-flipped");
-            frontFace.textContent = cards[currentIndex].term;
-            backFace.textContent = cards[currentIndex].definition;
-            progressIndicator.textContent = `Card ${currentIndex + 1} of ${cards.length}`;
-        };
-
-        const flipCard = () => cardElement.classList.toggle("is-flipped");
-
-        // Use a fresh set of listeners to avoid conflicts
-        const newCardElement = cardElement.cloneNode(true);
-        cardElement.parentNode.replaceChild(newCardElement, cardElement);
-        newCardElement.addEventListener("click", flipCard);
-        
-        this.safeAddEventListener("practice-flip-card", "click", () => newCardElement.classList.toggle("is-flipped"));
-        this.safeAddEventListener("practice-next-card", "click", () => {
-            if (currentIndex < cards.length - 1) {
-                currentIndex++;
-                updateCard();
-            }
-        });
-        this.safeAddEventListener("practice-prev-card", "click", () => {
-            if (currentIndex > 0) {
-                currentIndex--;
-                updateCard();
-            }
-        });
-        
-        // Wire up the back button
-        backButton.onclick = () => this.showPracticeScreen();
-
-        // Load the first card
-        updateCard();
-    }
     // --- Utility Methods ---
 
     addFlashcard() {
@@ -301,54 +211,6 @@ class FlashcardApp {
             textarea.addEventListener("input", expand);
             expand();
         });
-    }
-
-    startPracticeSession(cards) {
-        // Hide the set selection and show the card viewer
-        document.getElementById("practice-set-selection").style.display = "none";
-        document.getElementById("practice-card-view").style.display = "flex";
-
-        const cardElement = document.getElementById("practice-card");
-        const frontFace = document.querySelector("#practice-card .card-front");
-        const backFace = document.querySelector("#practice-card .card-back");
-        const progressIndicator = document.getElementById("practice-progress");
-
-        if (!cardElement || !frontFace || !backFace || !progressIndicator) {
-            console.error("Practice screen elements could not be found. Aborting session.");
-            alert("Could not start the practice session due to a layout error.");
-            this.showMenu(); // Go back to a safe screen
-            return;
-        }
-
-        let currentIndex = 0;
-        const updateCard = () => {
-            cardElement.classList.remove("is-flipped");
-            frontFace.textContent = cards[currentIndex].term;
-            backFace.textContent = cards[currentIndex].definition;
-            progressIndicator.textContent = `Card ${currentIndex + 1} of ${cards.length}`;
-        };
-
-        // Use a single, reliable listener for flipping the card
-        const flipCard = () => cardElement.classList.toggle("is-flipped");
-        cardElement.onclick = flipCard; // Make the whole card clickable
-        
-        // Wire up the rest of the controls
-        this.safeAddEventListener("practice-flip-card", "click", flipCard);
-        this.safeAddEventListener("practice-next-card", "click", () => {
-            if (currentIndex < cards.length - 1) {
-                currentIndex++;
-                updateCard();
-            }
-        });
-        this.safeAddEventListener("practice-prev-card", "click", () => {
-            if (currentIndex > 0) {
-                currentIndex--;
-                updateCard();
-            }
-        });
-        this.safeAddEventListener("practice-back-to-selection", "click", () => this.showPracticeScreen());
-
-        updateCard(); // Load the first card
     }
 
     async saveSet() {
