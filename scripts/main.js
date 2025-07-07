@@ -188,19 +188,27 @@ class FlashcardApp {
     }
     
     startPracticeSession(cards) {
+        // Step 1: Hide the set selection list and show the card practice view
         document.getElementById("practice-set-selection").style.display = "none";
         document.getElementById("practice-card-view").style.display = "flex";
 
-        let currentIndex = 0;
+        // Step 2: Find all the necessary elements for the practice view
         const cardElement = document.getElementById("practice-card");
-        const frontFace = cardElement.querySelector(".card-front");
-        const backFace = cardElement.querySelector(".card-back");
+        const frontFace = cardElement ? cardElement.querySelector(".card-front") : null;
+        const backFace = cardElement ? cardElement.querySelector(".card-back") : null;
         const progressIndicator = document.getElementById("practice-progress");
+        const backButton = document.getElementById("practice-back-to-selection");
 
-        if (!cardElement || !frontFace || !backFace || !progressIndicator) {
-            console.error("Practice view elements are missing!");
+        // Step 3: Verify all elements were found before proceeding
+        if (!cardElement || !frontFace || !backFace || !progressIndicator || !backButton) {
+            console.error("Practice screen elements are missing from the DOM. Aborting.");
+            alert("Error: Could not load the practice screen.");
+            this.showMenu(); // Go back to a safe screen
             return;
         }
+
+        // Step 4: If all elements exist, set up the practice session
+        let currentIndex = 0;
 
         const updateCard = () => {
             cardElement.classList.remove("is-flipped");
@@ -210,9 +218,13 @@ class FlashcardApp {
         };
 
         const flipCard = () => cardElement.classList.toggle("is-flipped");
-        cardElement.onclick = flipCard;
 
-        this.safeAddEventListener("practice-flip-card", "click", flipCard);
+        // Use a fresh set of listeners to avoid conflicts
+        const newCardElement = cardElement.cloneNode(true);
+        cardElement.parentNode.replaceChild(newCardElement, cardElement);
+        newCardElement.addEventListener("click", flipCard);
+        
+        this.safeAddEventListener("practice-flip-card", "click", () => newCardElement.classList.toggle("is-flipped"));
         this.safeAddEventListener("practice-next-card", "click", () => {
             if (currentIndex < cards.length - 1) {
                 currentIndex++;
@@ -225,11 +237,13 @@ class FlashcardApp {
                 updateCard();
             }
         });
-        this.safeAddEventListener("practice-back-to-selection", "click", () => this.showPracticeScreen());
+        
+        // Wire up the back button
+        backButton.onclick = () => this.showPracticeScreen();
 
+        // Load the first card
         updateCard();
     }
-
     // --- Utility Methods ---
 
     addFlashcard() {
