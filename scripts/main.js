@@ -216,9 +216,9 @@ class FlashcardApp {
             progressIndicator.textContent = `Card ${currentIndex + 1} of ${cards.length}`;
         };
 
-        // **THE FIX IS HERE**: This line adds the click-to-flip functionality
         cardElement.addEventListener("click", () => cardElement.classList.toggle("is-flipped"));
 
+        // Set up the rest of the controls
         this.safeAddEventListener("practice-flip-card", "click", () => cardElement.classList.toggle("is-flipped"));
         this.safeAddEventListener("practice-next-card", "click", () => {
             if (currentIndex < cards.length - 1) {
