@@ -1,20 +1,40 @@
 class FlashcardApp {
     constructor() {
-        // --- Define all screen containers ---
+        // Screen containers
         this.startScreen = document.getElementById("start-screen");
         this.menueScreen = document.getElementById("menue-screen");
         this.flashcardScreen = document.getElementById("flashcard-screen");
         this.libraryScreen = document.getElementById("library-screen");
         this.practiceScreen = document.getElementById("practice-screen");
+        
         this.currentSetId = null;
+        this.eventListeners = []; // Track listeners for cleanup
+        
+        this.initializeApp();
+    }
 
-        // --- Set up the initial event listeners ---
-        this.safeAddEventListener("starting-button", "click", () => this.showMenu());
+    initializeApp() {
+        this.addEventListenerWithTracking("starting-button", "click", () => this.showMenu());
         this.setupMenuEventListeners();
     }
 
     /**
-     * A helper function to safely add event listeners without crashing the app.
+     * Adds event listener with tracking for potential cleanup
+     * Prevents duplicate listeners and helps avoid memory leaks
+     */
+    addEventListenerWithTracking(id, event, handler) {
+        const element = document.getElementById(id);
+        if (element) {
+            element.addEventListener(event, handler);
+            this.eventListeners.push({ element, event, handler });
+        } else {
+            console.warn(`Element with ID '${id}' not found. Listener not attached.`);
+        }
+    }
+
+    /**
+     * Safe event listener addition without tracking
+     * Use for dynamically created elements that will be garbage collected
      */
     safeAddEventListener(id, event, handler) {
         const element = document.getElementById(id);
@@ -25,7 +45,6 @@ class FlashcardApp {
         }
     }
 
-    // Sets up listeners for the main menu buttons
     setupMenuEventListeners() {
         this.safeAddEventListener("go-back", "click", () => this.showStart());
         this.safeAddEventListener("library-button", "click", () => this.showLibraryScreen());
@@ -33,8 +52,7 @@ class FlashcardApp {
         this.safeAddEventListener("practice", "click", () => this.showPracticeScreen());
     }
 
-    // --- Screen Visibility Management ---
-
+    // Screen visibility management
     hideAllScreens() {
         this.startScreen.style.display = "none";
         this.menueScreen.style.display = "none";
@@ -53,19 +71,14 @@ class FlashcardApp {
         this.menueScreen.style.display = "block";
     }
 
-
     showFlashcardScreen() {
         this.hideAllScreens();
         this.flashcardScreen.style.display = "flex";
         this.currentSetId = null;
 
-        document.getElementById("set-title").value = "";
-        document.querySelectorAll(".card-container").forEach(card => card.remove());
-
-        // Add the first blank card for the new set
+        this.resetFlashcardForm();
         this.addFlashcard();
 
-        // Safely set up listeners for the screen's buttons
         this.safeAddEventListener("go-back-flashcard", "click", () => this.showMenu());
         this.safeAddEventListener("add-card", "click", () => this.addFlashcard());
         this.safeAddEventListener("save-set", "click", () => this.saveSet());
@@ -81,7 +94,16 @@ class FlashcardApp {
             return;
         }
 
-        // Build the screen's static structure
+        this.buildLibraryStructure();
+        this.safeAddEventListener("go-back-library", "click", () => this.showMenu());
+        
+        await this.loadLibraryContent(user.uid);
+    }
+
+    /**
+     * Builds the static HTML structure for the library screen
+     */
+    buildLibraryStructure() {
         this.libraryScreen.innerHTML = `
             <div id="library-banner">
                 <button id="go-back-library">
@@ -91,13 +113,21 @@ class FlashcardApp {
             </div>
             <div id="library-content"></div>
         `;
-        
-        // Re-attach the back button listener
-        this.safeAddEventListener("go-back-library", "click", () => this.showMenu());
-        
+    }
+
+    /**
+     * Loads and displays user's flashcard sets from Firestore
+     */
+    async loadLibraryContent(userId) {
         const contentDiv = document.getElementById("library-content");
+        
         try {
-            const snapshot = await window.db.collection("flashcardSets").doc(user.uid).collection("sets").orderBy("createdAt", "desc").get();
+            const snapshot = await window.db
+                .collection("flashcardSets")
+                .doc(userId)
+                .collection("sets")
+                .orderBy("createdAt", "desc")
+                .get();
             
             if (snapshot.empty) {
                 contentDiv.innerHTML = "<p>You don't have any flashcard sets yet.</p>";
@@ -105,42 +135,8 @@ class FlashcardApp {
             }
 
             snapshot.forEach(doc => {
-                const data = doc.data();
-                const cardDiv = document.createElement("div");
-                cardDiv.className = "library-card";
-                
-                cardDiv.innerHTML = `
-                    <div class="library-card-content">
-                        <strong>${data.title}</strong>
-                        <p>${data.cards ? data.cards.length : 0} card(s)</p>
-                    </div>
-                    <button class="delete-set-btn" title="Delete Set">
-                        <img src="images/Trash.svg" alt="Delete">
-                    </button>
-                `;
-
-                // Make the main card area clickable for editing
-                const cardContent = cardDiv.querySelector(".library-card-content");
-                cardContent.addEventListener("click", () => this.editSet(doc.id, data));
-
-                // Add the delete functionality to the button
-                const deleteBtn = cardDiv.querySelector(".delete-set-btn");
-                deleteBtn.addEventListener("click", async (e) => {
-                    e.stopPropagation(); // Prevents the edit function from running
-                    
-                    if (confirm(`Are you sure you want to delete the set "${data.title}"?`)) {
-                        try {
-                            await window.db.collection("flashcardSets").doc(user.uid).collection("sets").doc(doc.id).delete();
-                            cardDiv.remove(); // Remove the set from the screen
-                            alert(`"${data.title}" has been deleted.`);
-                        } catch (error) {
-                            console.error("Error deleting set:", error);
-                            alert("Failed to delete the set.");
-                        }
-                    }
-                });
-                
-                contentDiv.appendChild(cardDiv);
+                const setCard = this.createLibraryCard(doc.id, doc.data());
+                contentDiv.appendChild(setCard);
             });
         } catch (err) {
             console.error("Error loading library:", err);
@@ -148,49 +144,98 @@ class FlashcardApp {
         }
     }
 
+    /**
+     * Creates a single library card element with edit and delete functionality
+     */
+    createLibraryCard(docId, data) {
+        const cardDiv = document.createElement("div");
+        cardDiv.className = "library-card";
+        
+        cardDiv.innerHTML = `
+            <div class="library-card-content">
+                <strong>${this.escapeHtml(data.title)}</strong>
+                <p>${data.cards ? data.cards.length : 0} card(s)</p>
+            </div>
+            <button class="delete-set-btn" title="Delete Set">
+                <img src="images/Trash.svg" alt="Delete">
+            </button>
+        `;
+
+        const cardContent = cardDiv.querySelector(".library-card-content");
+        cardContent.addEventListener("click", () => this.editSet(docId, data));
+
+        const deleteBtn = cardDiv.querySelector(".delete-set-btn");
+        deleteBtn.addEventListener("click", (e) => this.handleDeleteSet(e, docId, data.title, cardDiv));
+        
+        return cardDiv;
+    }
+
+    /**
+     * Handles deletion of a flashcard set
+     */
+    async handleDeleteSet(event, docId, title, cardElement) {
+        event.stopPropagation();
+        
+        if (!confirm(`Are you sure you want to delete the set "${title}"?`)) {
+            return;
+        }
+
+        const user = window.auth.currentUser;
+        if (!user) return;
+
+        try {
+            await window.db
+                .collection("flashcardSets")
+                .doc(user.uid)
+                .collection("sets")
+                .doc(docId)
+                .delete();
+            
+            cardElement.remove();
+            alert(`"${title}" has been deleted.`);
+        } catch (error) {
+            console.error("Error deleting set:", error);
+            alert("Failed to delete the set.");
+        }
+    }
+
     async showPracticeScreen() {
         this.hideAllScreens();
         this.practiceScreen.style.display = "flex";
 
-        // Show the set selection list and hide the card viewer
         document.getElementById("practice-set-selection").style.display = "flex";
         document.getElementById("practice-card-view").style.display = "none";
         
-        // Re-attach the main back button listener
         this.safeAddEventListener("go-back-practice", "click", () => this.showMenu());
 
         const user = window.auth.currentUser;
         if (!user) return;
 
+        await this.loadPracticeSets(user.uid);
+    }
+
+    /**
+     * Loads available flashcard sets for practice mode
+     */
+    async loadPracticeSets(userId) {
         const setListDiv = document.getElementById("practice-set-list");
-        setListDiv.innerHTML = ""; // Clear old list
+        setListDiv.innerHTML = "";
 
         try {
-            const snapshot = await window.db.collection("flashcardSets").doc(user.uid).collection("sets").orderBy("createdAt", "desc").get();
+            const snapshot = await window.db
+                .collection("flashcardSets")
+                .doc(userId)
+                .collection("sets")
+                .orderBy("createdAt", "desc")
+                .get();
+            
             if (snapshot.empty) {
                 setListDiv.innerHTML = "<p>You have no sets to practice.</p>";
                 return;
             }
 
             snapshot.forEach(doc => {
-                const data = doc.data();
-                const setItem = document.createElement("div");
-                setItem.className = "practice-set-item";
-                setItem.innerHTML = `
-                    <div>
-                        <strong>${data.title}</strong>
-                        <p>${data.cards ? data.cards.length : 0} card(s)</p>
-                    </div>
-                    <span>▶</span>
-                `;
-                // Add click listener to start the practice session for this set
-                setItem.addEventListener("click", () => {
-                    if (data.cards && data.cards.length > 0) {
-                        this.startPracticeSession(data.cards, data.title);
-                    } else {
-                        alert("This set has no cards to practice.");
-                    }
-                });
+                const setItem = this.createPracticeSetItem(doc.data());
                 setListDiv.appendChild(setItem);
             });
         } catch (err) {
@@ -199,8 +244,34 @@ class FlashcardApp {
         }
     }
 
-    // --- Utility Methods ---
+    /**
+     * Creates a clickable practice set item
+     */
+    createPracticeSetItem(data) {
+        const setItem = document.createElement("div");
+        setItem.className = "practice-set-item";
+        setItem.innerHTML = `
+            <div>
+                <strong>${this.escapeHtml(data.title)}</strong>
+                <p>${data.cards ? data.cards.length : 0} card(s)</p>
+            </div>
+            <span>▶</span>
+        `;
+        
+        setItem.addEventListener("click", () => {
+            if (data.cards && data.cards.length > 0) {
+                this.startPracticeSession(data.cards, data.title);
+            } else {
+                alert("This set has no cards to practice.");
+            }
+        });
+        
+        return setItem;
+    }
 
+    /**
+     * Adds a new blank flashcard to the creation/edit form
+     */
     addFlashcard() {
         const flashcardContent = document.getElementById("flashcard-content");
         const newCard = document.createElement("div");
@@ -212,41 +283,58 @@ class FlashcardApp {
                 <img src="images/Trash.svg" alt="trash-icon" />
             </button>
         `;
+        
         newCard.querySelector(".delete-card").addEventListener("click", () => newCard.remove());
+        
         const buttonContainer = flashcardContent.querySelector(".button-container");
         flashcardContent.insertBefore(newCard, buttonContainer);
+        
         this.autoExpandTextAreas();
     }
     
+    /**
+     * Loads an existing flashcard set for editing
+     */
     editSet(setId, setData) {
         this.hideAllScreens();
         this.flashcardScreen.style.display = "flex";
         this.currentSetId = setId;
 
+        this.resetFlashcardForm();
         document.getElementById("set-title").value = setData.title;
-        document.querySelectorAll(".card-container").forEach(card => card.remove());
         
         setData.cards.forEach(cardData => {
-            const flashcardContent = document.getElementById("flashcard-content");
-            const newCard = document.createElement("div");
-            newCard.className = "card-container";
-            newCard.innerHTML = `
-                <input type="text" class="term" value="${cardData.term}">
-                <textarea class="definition">${cardData.definition}</textarea>
-                <button class="delete-card"><img src="images/Trash.svg" alt="Delete"></button>
-            `;
-            newCard.querySelector(".delete-card").addEventListener("click", () => newCard.remove());
-            const buttonContainer = flashcardContent.querySelector(".button-container");
-            flashcardContent.insertBefore(newCard, buttonContainer);
+            this.addEditableFlashcard(cardData.term, cardData.definition);
         });
 
-        // Safely set up listeners for the screen's buttons
         this.safeAddEventListener("go-back-flashcard", "click", () => this.showMenu());
         this.safeAddEventListener("add-card", "click", () => this.addFlashcard());
         this.safeAddEventListener("save-set", "click", () => this.saveSet());
         this.autoExpandTextAreas();
     }
+
+    /**
+     * Adds a pre-filled flashcard (for editing)
+     */
+    addEditableFlashcard(term, definition) {
+        const flashcardContent = document.getElementById("flashcard-content");
+        const newCard = document.createElement("div");
+        newCard.className = "card-container";
+        newCard.innerHTML = `
+            <input type="text" class="term" value="${this.escapeHtml(term)}">
+            <textarea class="definition">${this.escapeHtml(definition)}</textarea>
+            <button class="delete-card"><img src="images/Trash.svg" alt="Delete"></button>
+        `;
+        
+        newCard.querySelector(".delete-card").addEventListener("click", () => newCard.remove());
+        
+        const buttonContainer = flashcardContent.querySelector(".button-container");
+        flashcardContent.insertBefore(newCard, buttonContainer);
+    }
     
+    /**
+     * Auto-expands textareas to fit content
+     */
     autoExpandTextAreas() {
         document.querySelectorAll(".definition").forEach(textarea => {
             const expand = () => {
@@ -258,8 +346,10 @@ class FlashcardApp {
         });
     }
 
+    /**
+     * Initializes practice session with flashcard navigation
+     */
     startPracticeSession(cards, setTitle) {
-        // Hide the set selection and show the card viewer
         document.getElementById("practice-set-selection").style.display = "none";
         document.getElementById("practice-card-view").style.display = "flex";
 
@@ -273,15 +363,16 @@ class FlashcardApp {
         practiceSetTitle.textContent = setTitle;
 
         const updateCard = () => {
-            cardElement.classList.remove("is-flipped"); // Always show front first
+            cardElement.classList.remove("is-flipped");
             frontFace.textContent = cards[currentIndex].term;
             backFace.textContent = cards[currentIndex].definition;
             progressIndicator.textContent = `Card ${currentIndex + 1} of ${cards.length}`;
         };
 
-        // Button listeners for the practice session
-        document.getElementById("practice-flip-card").onclick = () => cardElement.classList.toggle("is-flipped");
-        cardElement.onclick = () => cardElement.classList.toggle("is-flipped");
+        // Using { once: false } explicitly for clarity, though it's the default [web:6]
+        const flipCard = () => cardElement.classList.toggle("is-flipped");
+        document.getElementById("practice-flip-card").onclick = flipCard;
+        cardElement.onclick = flipCard;
 
         document.getElementById("practice-next-card").onclick = () => {
             if (currentIndex < cards.length - 1) {
@@ -289,6 +380,7 @@ class FlashcardApp {
                 updateCard();
             }
         };
+        
         document.getElementById("practice-prev-card").onclick = () => {
             if (currentIndex > 0) {
                 currentIndex--;
@@ -296,14 +388,16 @@ class FlashcardApp {
             }
         };
         
-        // Listener to exit the session
         document.getElementById("practice-exit-session").onclick = () => {
-            this.showPracticeScreen(); // Go back to the set selection list
+            this.showPracticeScreen();
         };
 
-        updateCard(); // Load the first card
+        updateCard();
     }
 
+    /**
+     * Saves or updates a flashcard set in Firestore
+     */
     async saveSet() {
         const setTitle = document.getElementById("set-title").value.trim();
         if (!setTitle) {
@@ -311,17 +405,7 @@ class FlashcardApp {
             return;
         }
 
-        const cardElements = document.querySelectorAll(".card-container");
-        const flashcards = [];
-
-        cardElements.forEach(card => {
-            const term = card.querySelector(".term").value.trim();
-            const definition = card.querySelector(".definition").value.trim();
-            if (term && definition) {
-                flashcards.push({ term, definition });
-            }
-        });
-
+        const flashcards = this.collectFlashcards();
         if (flashcards.length === 0) {
             alert("Please add at least one flashcard with both a term and a definition.");
             return;
@@ -334,117 +418,83 @@ class FlashcardApp {
         }
 
         try {
-            if (this.currentSetId) {
-                // Data for updating an existing set
-                const setData = {
-                    title: setTitle,
-                    cards: flashcards,
-                    updatedAt: firebase.firestore.FieldValue.serverTimestamp() // Add update timestamp
-                };
-                await window.db.collection("flashcardSets").doc(user.uid).collection("sets").doc(this.currentSetId).update(setData);
-                alert(`Flashcard set "${setTitle}" updated successfully.`);
+            const setRef = window.db
+                .collection("flashcardSets")
+                .doc(user.uid)
+                .collection("sets");
 
-            } else {
-                // Data for creating a new set
-                const setData = {
+            if (this.currentSetId) {
+                await setRef.doc(this.currentSetId).update({
                     title: setTitle,
                     cards: flashcards,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp() // Use server timestamp
-                };
-                await window.db.collection("flashcardSets").doc(user.uid).collection("sets").add(setData);
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                alert(`Flashcard set "${setTitle}" updated successfully.`);
+            } else {
+                await setRef.add({
+                    title: setTitle,
+                    cards: flashcards,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
                 alert(`Flashcard set "${setTitle}" saved online.`);
             }
 
-            // Reset form
-            this.currentSetId = null;
-            document.getElementById("set-title").value = "";
-            document.querySelectorAll(".card-container").forEach(card => card.remove());
+            this.resetFlashcardForm();
             this.addFlashcard();
-
         } catch (error) {
             console.error("Error saving to Firestore:", error.message, error);
             alert("Something went wrong while saving.");
         }
     }
 
-    async loadLibrary() {
-        const user = window.auth.currentUser;
-        if (!user) {
-            alert("You must be logged in to view your flashcards.");
-            return;
-        }
+    /**
+     * Collects all flashcards from the form
+     */
+    collectFlashcards() {
+        const cardElements = document.querySelectorAll(".card-container");
+        const flashcards = [];
 
-        try {
-            const snapshot = await window.db
-                .collection("flashcardSets")
-                .doc(user.uid)
-                .collection("sets")
-                .orderBy("createdAt", "desc")
-                .get();
+        cardElements.forEach(card => {
+            const term = card.querySelector(".term").value.trim();
+            const definition = card.querySelector(".definition").value.trim();
+            if (term && definition) {
+                flashcards.push({ term, definition });
+            }
+        });
 
-            const libraryScreen = document.getElementById("library-screen");
+        return flashcards;
+    }
 
-            // Step 1: Clear any old content
-            libraryScreen.innerHTML = ""; 
+    /**
+     * Resets the flashcard creation form
+     */
+    resetFlashcardForm() {
+        this.currentSetId = null;
+        document.getElementById("set-title").value = "";
+        document.querySelectorAll(".card-container").forEach(card => card.remove());
+    }
 
-            // Step 2: Create and append the banner
-            const banner = document.createElement("div");
-            banner.id = "library-banner";
-            banner.innerHTML = `
-                <button id="go-back-library">
-                    <img src="images/Left-Arrow.svg" alt="library-back" id="library-left-icon">
-                </button>
-                <h1>Your Flashcard Sets</h1>
-            `;
-            libraryScreen.appendChild(banner);
+    /**
+     * Escapes HTML to prevent XSS attacks
+     */
+    escapeHtml(text) {
+        const map = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;'
+        };
+        return text.replace(/[&<>"']/g, char => map[char]);
+    }
 
-            // Step 3: Create and append the content area
-            const contentDiv = document.createElement("div");
-            contentDiv.id = "library-content";
-            libraryScreen.appendChild(contentDiv);
-
-            // Step 4: Populate the content area with flashcard sets
-            snapshot.forEach(doc => {
-                const data = doc.data();
-                const cardDiv = document.createElement("div");
-                cardDiv.classList.add("library-card"); // Use a class for styling
-                cardDiv.innerHTML = `
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <div style="overflow-wrap: anywhere;">
-                            <strong>${data.title}</strong>
-                            <p>${data.cards ? data.cards.length : 0} card(s)</p>
-                        </div>
-                        <button class="delete-set-btn" style="background: none; border: none; cursor: pointer;" title="Delete set">
-                            <img src="images/Trash.svg"/>
-                        </button>
-                    </div>
-                `;
-
-                cardDiv.addEventListener("click", () => this.editSet(doc.id, data));
-
-                const deleteBtn = cardDiv.querySelector(".delete-set-btn");
-                deleteBtn.addEventListener("click", async (e) => {
-                    e.stopPropagation();
-                    if (confirm(`Are you sure you want to delete "${data.title}"?`)) {
-                        try {
-                            await window.db.collection("flashcardSets").doc(user.uid).collection("sets").doc(doc.id).delete();
-                            cardDiv.remove();
-                            alert(`"${data.title}" has been deleted.`);
-                        } catch (error) {
-                            console.error("Failed to delete set:", error);
-                            alert("Failed to delete the set.");
-                        }
-                    }
-                });
-                contentDiv.appendChild(cardDiv);
-            });
-
-            // Step 5: Add the back button's event listener
-            document.getElementById("go-back-library").addEventListener("click", () => this.showMenu());
-
-        } catch (err) {
-            console.error("Error loading flashcard sets:", err);
-            alert("Failed to load your flashcard sets.");
-        }
+    /**
+     * Cleanup method to remove event listeners (call when destroying the app)
+     */
+    cleanup() {
+        this.eventListeners.forEach(({ element, event, handler }) => {
+            element.removeEventListener(event, handler);
+        });
+        this.eventListeners = [];
     }
 }
